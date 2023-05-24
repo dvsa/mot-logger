@@ -1,0 +1,14 @@
+<?php
+
+return [
+    'DvsaLogger' => [
+        'listeners' => [
+            'api_request'   => [
+                'enabled' => false,
+            ],
+            'api_response' => [
+                'enabled' => false,
+            ],
+        ],
+    ],
+];
