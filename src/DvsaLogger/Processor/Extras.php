@@ -17,8 +17,8 @@ use Laminas\Stdlib\RequestInterface;
  */
 class Extras implements ProcessorInterface
 {
-    const URI_MAX_LENGTH        = 255;
-    const USER_AGENT_MAX_LENGTH = 255;
+    private const URI_MAX_LENGTH        = 255;
+    private const USER_AGENT_MAX_LENGTH = 255;
 
     /** @var null|RequestInterface */
     protected $request = null;
@@ -37,9 +37,12 @@ class Extras implements ProcessorInterface
      * @param $requestUuid
      */
     public function __construct(
-        RequestInterface $request, MotFrontendIdentityProvider $identity, WebAccessTokenService $tokenService,
-        $routeMatch, $requestUuid)
-    {
+        RequestInterface $request,
+        MotFrontendIdentityProvider $identity,
+        WebAccessTokenService $tokenService,
+        $routeMatch,
+        $requestUuid
+    ) {
         $this->request = $request;
         $this->requestUuid = $requestUuid;
         $this->identity = $identity;

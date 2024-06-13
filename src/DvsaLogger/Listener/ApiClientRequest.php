@@ -30,8 +30,10 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     {
         $sharedEvents = $events->getSharedManager();
         $this->listeners[] = $sharedEvents->attach(
-            'DvsaCommon\HttpRestJson\Client', 'startOfRequest',
-            array($this, 'logStartOfRequest'), 100
+            'DvsaCommon\HttpRestJson\Client',
+            'startOfRequest',
+            array($this, 'logStartOfRequest'),
+            100
         );
     }
 
@@ -48,7 +50,8 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     public function logStartOfRequest(Event $e)
     {
         $this->logger->debug(
-            '', ['endpoint_uri'   => $e->getParam('resourcePath'),
+            '',
+            ['endpoint_uri'   => $e->getParam('resourcePath'),
                  'request_method' => $e->getParam(
                      'request_method'
                  ), 'parameters'  => $e->getParam('content')]

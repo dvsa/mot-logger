@@ -34,16 +34,15 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $this->logger->expects($this->once())
             ->method('debug')
             ->with(
-                    '',
-                    $this->callback(function ($value) {
+                '',
+                $this->callback(function ($value) {
                         $this->assertArrayHasKey('query', $value);
                         $this->assertArrayHasKey('parameters', $value);
                         $this->assertArrayHasKey('types', $value);
                         $this->assertArrayHasKey('query_time', $value);
 
                         return true;
-                    })
-
+                })
             );
 
         $queryLoggerService->startQuery('SELECT * FROM users', [], []);
@@ -74,7 +73,6 @@ class DoctrineQueryLoggerServiceTest extends TestCase
 
                     return true;
                 })
-
             );
 
         $queryLoggerService->startQuery('SELECT * FROM users', [], []);

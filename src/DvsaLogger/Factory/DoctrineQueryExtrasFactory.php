@@ -13,7 +13,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  */
 class DoctrineQueryExtrasFactory implements FactoryInterface
 {
-
     /**
      * @param ContainerInterface $container
      * @param string $requestedName

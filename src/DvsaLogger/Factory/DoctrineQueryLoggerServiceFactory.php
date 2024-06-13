@@ -23,7 +23,8 @@ class DoctrineQueryLoggerServiceFactory implements FactoryInterface
     {
         $enabled = false;
         $config = $container->get('config');
-        if (isset($config['DvsaLogger'])
+        if (
+            isset($config['DvsaLogger'])
             && isset($config['DvsaLogger']['loggers'])
             && isset($config['DvsaLogger']['loggers']['doctrine_query'])
             && isset($config['DvsaLogger']['loggers']['doctrine_query']['enabled'])

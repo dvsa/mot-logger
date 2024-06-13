@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b9ddd2f2646a5db7b79326a134a794b",
+    "content-hash": "cf4af8b3ba722935187b5805e4f73028",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -4623,6 +4623,61 @@
             "time": "2022-01-28T04:35:22+00:00"
         },
         {
+            "name": "dvsa/coding-standards",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dvsa/php-coding-standards.git",
+                "reference": "22da6f5cbed2a3ba619d1552727a908fbf0f2098"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dvsa/php-coding-standards/zipball/22da6f5cbed2a3ba619d1552727a908fbf0f2098",
+                "reference": "22da6f5cbed2a3ba619d1552727a908fbf0f2098",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0",
+                "squizlabs/php_codesniffer": "^3.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0"
+            },
+            "suggest": {
+                "friendsofphp/php-cs-fixer": "To use the shared coding standards ruleset for PHP CS Fixer"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dvsa\\PhpCodingStandards\\PhpCsFixer\\": "src/Profiles/DVSA/PhpCsFixer"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shaun Hare",
+                    "email": "shaun.hare@dvsa.gov.uk"
+                },
+                {
+                    "name": "Igor Stimoli",
+                    "email": "igor.stimoli@bjss.com"
+                },
+                {
+                    "name": "Chris Emerson",
+                    "email": "chris.emerson@bjss.com"
+                }
+            ],
+            "description": "Coding Standards used for PHP in the Driver and Vehicle Standards Agency. PSR Compliant.",
+            "support": {
+                "issues": "https://github.com/dvsa/php-coding-standards/issues",
+                "source": "https://github.com/dvsa/php-coding-standards/tree/v2.0.0"
+            },
+            "time": "2022-01-17T15:41:57+00:00"
+        },
+        {
             "name": "myclabs/deep-copy",
             "version": "1.11.1",
             "source": {
@@ -6354,6 +6409,86 @@
             "time": "2023-10-04T10:59:08+00:00"
         },
         {
+            "name": "squizlabs/php_codesniffer",
+            "version": "3.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
+                "reference": "8f90f7a53ce271935282967f53d0894f8f1ff877"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/8f90f7a53ce271935282967f53d0894f8f1ff877",
+                "reference": "8f90f7a53ce271935282967f53d0894f8f1ff877",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
+            },
+            "bin": [
+                "bin/phpcbf",
+                "bin/phpcs"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Sherwood",
+                    "role": "Former lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "Current lead"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer/graphs/contributors"
+                }
+            ],
+            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+            "keywords": [
+                "phpcs",
+                "standards",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPCSStandards/PHP_CodeSniffer/issues",
+                "security": "https://github.com/PHPCSStandards/PHP_CodeSniffer/security/policy",
+                "source": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+                "wiki": "https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCSStandards",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-05-22T21:24:41+00:00"
+        },
+        {
             "name": "symfony/filesystem",
             "version": "v6.3.1",
             "source": {
@@ -6541,5 +6676,5 @@
     "platform-overrides": {
         "php": "8.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

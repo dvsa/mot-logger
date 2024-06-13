@@ -16,7 +16,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  */
 class ApiResponseLoggerFactory implements FactoryInterface
 {
-
     /**
      * @var  Logger
      */

@@ -11,7 +11,6 @@ use Laminas\Log\Processor\ProcessorInterface;
 use Laminas\Stdlib\RequestInterface;
 use Laminas\Stdlib\ResponseInterface;
 
-
 /**
  * Class Extras
  *

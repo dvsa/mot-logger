@@ -84,7 +84,7 @@ class FrontendRequest implements ListenerAggregateInterface, LoggerAwareInterfac
      */
     public function logRequest(MvcEvent $event)
     {
-        if ($event->getRequest() instanceOf \Laminas\Http\PhpEnvironment\Request) {
+        if ($event->getRequest() instanceof \Laminas\Http\PhpEnvironment\Request) {
             $this->logger->debug('');
         }
     }
