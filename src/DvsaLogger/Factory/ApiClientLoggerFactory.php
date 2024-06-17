@@ -8,7 +8,7 @@ use Laminas\Log\Formatter\Db as DbFormatter;
 use Laminas\Log\Logger;
 use Laminas\Log\Writer\Db as DbWriter;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Log\Processor\ProcessorInterface;
 
 /**
  * Class ApiClientLoggerFactory.
@@ -16,7 +16,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class ApiClientLoggerFactory implements FactoryInterface
 {
     /**
-     * @var  Logger
+     * @var Logger
      */
     private $logger;
 
@@ -36,23 +36,65 @@ class ApiClientLoggerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config       = $container->get('Config');
-        $config       = $config['DvsaLogger'];
+        /** @var array */
+        $config = $container->get('Config');
+
+        /** @var array */
+        $config = $config['DvsaLogger'];
         $this->logger = new Logger();
 
-        $adapter   = new Adapter($config['dbConfig']);
-        $tableName = $config['listeners']['api_client_request']['options']['tableName'];
-        $columnMap = $config['listeners']['api_client_request']['options']['columnMap'];
-
-        $writer = new DbWriter($adapter, $tableName, $columnMap);
+        /** @var array */
+        $dbConfig = $config['dbConfig'];
+        $adapter   = new Adapter($dbConfig);
+        $writer = new DbWriter($adapter, $this->getTableName($config), $this->getColumnMap($config));
         $writer->setFormatter(new DbFormatter('Y:m:d H:i:s'));
         $this->logger->addWriter($writer);
 
+        /** @var ProcessorInterface | string */
         $processor = $container->get(
             'DvsaLogger\ExtrasProcessor'
         );
         $this->logger->addProcessor($processor);
 
         return $this->logger;
+    }
+
+    /**
+     * @return string | null
+     */
+    private function getTableName(array $config)
+    {
+        /** @var string | null */
+        return $this->getFromOptions($config, 'tableName');
+    }
+
+    /**
+     * @return array | null
+     */
+    private function getColumnMap(array $config)
+    {
+        /** @var array | null */
+        return $this->getFromOptions($config, 'columnMap');
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getFromOptions(array $config, string $propName)
+    {
+        if (
+            array_key_exists('listeners', $config) &&
+            is_array($config['listeners']) &&
+            array_key_exists('api_client_request', $config['listeners']) &&
+            is_array($config['listeners']['api_client_request']) &&
+            array_key_exists('options', $config['listeners']['api_client_request']) &&
+            is_array($config['listeners']['api_client_request']['options']) &&
+            array_key_exists($propName, $config['listeners']['api_client_request']['options'])
+        ) {
+            /** @var mixed */
+            return $config['listeners']['api_client_request']['options'][$propName];
+        }
+
+        return null;
     }
 }

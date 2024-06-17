@@ -5,6 +5,8 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Processor\ApiResponseExtras;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Http\Request;
+use Laminas\Http\Response;
 
 /**
  * Class ExtrasProcessorFactory
@@ -22,12 +24,20 @@ class ApiResponseExtrasFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         // get config
+        /** @var array */
         $config = $container->get('config');
         //get request
+        /** @var Request */
         $request = $container->get('Request');
+        /** @var Response */
         $response = $container->get('Response');
         // inject request into the extras processor
-        $processor = new ApiResponseExtras($request, $response, $config['DvsaLogger']['RequestUUID']);
+        /** @var array */
+        $dvsaLogger = $config['DvsaLogger'];
+        /** @var string */
+        $uuid = $dvsaLogger['RequestUUID'];
+        $processor = new ApiResponseExtras($request, $response, $uuid);
+
         return $processor;
     }
 }

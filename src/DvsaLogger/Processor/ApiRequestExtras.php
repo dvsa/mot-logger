@@ -11,6 +11,7 @@ use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
 use Laminas\Stdlib\RequestInterface;
+use Laminas\Http\Request;
 
 /**
  * Class Extras
@@ -19,8 +20,9 @@ use Laminas\Stdlib\RequestInterface;
  */
 class ApiRequestExtras implements ProcessorInterface
 {
-    /** @var null|RequestInterface */
-    protected $request = null;
+    /** @var Request */
+    protected $request;
+    /** @var string */
     protected $requestUuid;
     /** @var MotFrontendIdentityProvider $identity */
     protected $identity;
@@ -28,7 +30,7 @@ class ApiRequestExtras implements ProcessorInterface
     protected $tokenService;
     protected $routeMatch;
 
-    public function __construct(RequestInterface $request, $uuid)
+    public function __construct(Request $request, string $uuid)
     {
         $this->request = $request;
         $this->requestUuid = $uuid;
@@ -43,10 +45,7 @@ class ApiRequestExtras implements ProcessorInterface
      */
     public function process(array $event)
     {
-        $uri = '';
-        if ($this->request instanceof HttpRequest) {
-            $uri = $this->request->getUriString();
-        }
+        $uri = $this->request->getUriString();
         $header = $this->request->getHeader('Authorization');
         $token = '';
         if ($header instanceof Authorization) {
@@ -62,7 +61,9 @@ class ApiRequestExtras implements ProcessorInterface
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
         $parameters = [];
-        $parameters['get_vars'] = $this->request->getQuery()->toArray();
+        /** @var \Laminas\Stdlib\ParametersInterface<string, string> */
+        $query = $this->request->getQuery();
+        $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();
         $route = '';
         $request_method = $this->request->getMethod();

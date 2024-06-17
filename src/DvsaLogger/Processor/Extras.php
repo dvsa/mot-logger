@@ -20,8 +20,9 @@ class Extras implements ProcessorInterface
     private const URI_MAX_LENGTH        = 255;
     private const USER_AGENT_MAX_LENGTH = 255;
 
-    /** @var null|RequestInterface */
-    protected $request = null;
+    /** @var HttpRequest */
+    protected $request;
+    /** @var string */
     protected $requestUuid;
     /** @var MotFrontendIdentityProvider $identity */
     protected $identity;
@@ -30,14 +31,14 @@ class Extras implements ProcessorInterface
     protected $routeMatch;
 
     /**
-     * @param \Laminas\Stdlib\RequestInterface $request
+     * @param HttpRequest $request
      * @param \Core\Service\MotFrontendIdentityProvider $identity
      * @param \DvsaAuthentication\Service\WebAccessTokenService $tokenService
      * @param $routeMatch
      * @param $requestUuid
      */
     public function __construct(
-        RequestInterface $request,
+        HttpRequest $request,
         MotFrontendIdentityProvider $identity,
         WebAccessTokenService $tokenService,
         $routeMatch,
@@ -59,16 +60,15 @@ class Extras implements ProcessorInterface
      */
     public function process(array $event)
     {
-        $uri = '';
-        if ($this->request instanceof HttpRequest) {
-            $uri = $this->request->getUriString();
-        }
+        $uri = $this->request->getUriString();
         $token = $this->tokenService->getToken();
 
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
         $parameters = [];
-        $parameters['get_vars'] = $this->request->getQuery()->toArray();
+        /** @var \Laminas\Stdlib\ParametersInterface */
+        $query = $this->request->getQuery();
+        $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();
         $route = '';
         $request_method = $this->request->getMethod();

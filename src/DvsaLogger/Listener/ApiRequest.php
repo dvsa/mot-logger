@@ -81,6 +81,8 @@ class ApiRequest implements ListenerAggregateInterface, LoggerAwareInterface
 
     /**
      * @param MvcEvent $event
+     *
+     * @return void
      */
     public function logRequest(MvcEvent $event)
     {

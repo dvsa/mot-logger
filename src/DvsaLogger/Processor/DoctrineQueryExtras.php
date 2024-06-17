@@ -7,7 +7,6 @@ use Laminas\Http\Header\GenericHeader;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
-use Laminas\Stdlib\RequestInterface;
 
 /**
  * Class DoctrineQueryExtras
@@ -16,11 +15,12 @@ use Laminas\Stdlib\RequestInterface;
  */
 class DoctrineQueryExtras implements ProcessorInterface
 {
-    /** @var null|RequestInterface */
-    protected $request = null;
+    /** @var HttpRequest */
+    protected $request;
+    /** @var string */
     protected $requestUuid;
 
-    public function __construct(RequestInterface $request, $uuid)
+    public function __construct(HttpRequest $request, string $uuid)
     {
         $this->request = $request;
         $this->requestUuid = $uuid;
@@ -35,10 +35,7 @@ class DoctrineQueryExtras implements ProcessorInterface
      */
     public function process(array $event)
     {
-        $uri = '';
-        if ($this->request instanceof HttpRequest) {
-            $uri = $this->request->getUriString();
-        }
+        $uri = $this->request->getUriString();
         $header = $this->request->getHeader('X-calling-uri');
         $requesting_page = '';
         if ($header instanceof GenericHeader) {
@@ -56,8 +53,12 @@ class DoctrineQueryExtras implements ProcessorInterface
         }
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
-        $query_string = json_encode($this->request->getQuery()->toArray());
-        $post_data = json_encode(json_decode($this->request->getContent()));
+        /** @var \Laminas\Stdlib\ParametersInterface */
+        $query = $this->request->getQuery();
+        $query_string = json_encode($query->toArray());
+        /** @var string */
+        $content = $this->request->getContent();
+        $post_data = json_encode(json_decode($content));
         $method = $this->request->getMethod();
         $extras = array(
             'api_endpoint_uri'    => $uri,

@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class DoctrineQueryLoggerServiceTest extends TestCase
 {
+    /** @var \PHPUnit\Framework\MockObject\MockObject&LoggerInterface */
     private $logger;
 
     protected function setUp(): void
@@ -17,6 +18,9 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
+    /**
+     * @return void
+     */
     public function testItDoesNotLogIfNotEnabled()
     {
         $queryLoggerService = new DoctrineQueryLoggerService($this->logger);
@@ -27,6 +31,9 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $queryLoggerService->stopQuery();
     }
 
+    /**
+     * @return void
+     */
     public function testItLogsQueryIfEnabled()
     {
         $queryLoggerService = new DoctrineQueryLoggerService($this->logger, true);
@@ -49,6 +56,9 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $queryLoggerService->stopQuery();
     }
 
+    /**
+     * @return void
+     */
     public function testItLogsRepositoryMethod()
     {
         $debugger = $this->createMock(BacktraceDebugger::class);

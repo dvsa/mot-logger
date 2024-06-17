@@ -18,7 +18,8 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
 {
     use LoggerAwareTrait;
 
-    protected $listeners = array();
+    /** @var array */
+    protected $listeners = [];
 
     /** @var  Log $log */
     protected $log;
@@ -29,12 +30,14 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach(
-            'DvsaCommon\HttpRestJson\Client',
-            'startOfRequest',
-            array($this, 'logStartOfRequest'),
-            100
-        );
+        if ($sharedEvents !== null) {
+            $this->listeners[] = $sharedEvents->attach(
+                'DvsaCommon\HttpRestJson\Client',
+                'startOfRequest',
+                array($this, 'logStartOfRequest'),
+                100
+            );
+        }
     }
 
     public function detach(EventManagerInterface $events)
@@ -47,6 +50,9 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
         }
     }
 
+    /**
+     * @return void
+     */
     public function logStartOfRequest(Event $e)
     {
         $this->logger->debug(

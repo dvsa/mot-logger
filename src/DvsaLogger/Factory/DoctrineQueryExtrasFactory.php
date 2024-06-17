@@ -22,11 +22,17 @@ class DoctrineQueryExtrasFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         // get config
+        /** @var array */
         $config = $container->get('config');
-        // get request
+        //get request
+        /** @var \Laminas\Http\Request */
         $request = $container->get('Request');
         // inject request into the extras processor
-        $processor = new DoctrineQueryExtras($request, $config['DvsaLogger']['RequestUUID']);
+        /** @var array */
+        $dvsaLogger = $config['DvsaLogger'];
+        /** @var string */
+        $uuid = $dvsaLogger['RequestUUID'];
+        $processor = new DoctrineQueryExtras($request, $uuid);
         return $processor;
     }
 }

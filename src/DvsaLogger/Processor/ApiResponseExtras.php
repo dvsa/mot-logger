@@ -8,8 +8,8 @@ use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\ContentType;
 use Laminas\Http\Header\GenericHeader;
 use Laminas\Log\Processor\ProcessorInterface;
-use Laminas\Stdlib\RequestInterface;
-use Laminas\Stdlib\ResponseInterface;
+use Laminas\Http\Response;
+use Laminas\Http\Request;
 
 /**
  * Class Extras
@@ -18,16 +18,18 @@ use Laminas\Stdlib\ResponseInterface;
  */
 class ApiResponseExtras implements ProcessorInterface
 {
-    /** @var null|RequestInterface */
-    protected $request = null;
+    /** @var Request */
+    protected $request;
+    /** @var string */
     protected $requestUuid;
     /** @var MotFrontendIdentityProvider $identity */
     protected $identity;
     /** @var WebAccessTokenService $tokenService */
     protected $tokenService;
+    /** @var Response */
     protected $response;
 
-    public function __construct(RequestInterface $request, ResponseInterface $response, $uuid)
+    public function __construct(Request $request, Response $response, string $uuid)
     {
         $this->request = $request;
         $this->response = $response;
@@ -56,7 +58,9 @@ class ApiResponseExtras implements ProcessorInterface
         }
 
         $parameters = [];
-        $parameters['get_vars'] = $this->request->getQuery()->toArray();
+        /** @var \Laminas\Stdlib\ParametersInterface */
+        $query = $this->request->getQuery();
+        $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();
 
         $header = $this->response->getHeaders()->get('Content-Type');

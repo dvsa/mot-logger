@@ -17,14 +17,24 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
+    /** @var bool */
     protected $enabled;
 
+    /** @var string */
     protected $sql;
+    /** @var array|null */
     protected $params;
+    /** @var array|null */
     protected $types;
+    /** @var float */
     protected $startTime;
+    /** @var BacktraceDebugger */
     protected $debugger;
 
+    /**
+     * @param \Laminas\Log\LoggerInterface $logger
+     * @param bool $enabled
+     */
     public function __construct($logger, $enabled = false, BacktraceDebugger $debugger = null)
     {
         $this->logger = $logger;
@@ -40,7 +50,8 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
         $this->sql = $sql;
         $this->params = $params;
         $this->types = $types;
-        $this->startTime = microtime(1);
+        //  The line below was previous $this->startTime = microtime(1). Presumably the 1 is supposed to be true
+        $this->startTime = microtime(true);
     }
 
     /**
@@ -55,7 +66,8 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
                     'query'      => $this->sql,
                     'parameters' => json_encode($this->params),
                     'types'      => $this->types,
-                    'query_time' => microtime(1) - $this->startTime,
+                    // 'query_time' => microtime(1) - $this->startTime,
+                    'query_time' => microtime(true) - $this->startTime,
                     'context'    => json_encode($this->getContext()),
                 ]
             );
@@ -63,7 +75,7 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
     }
 
     /**
-     * @return []
+     * @return array
      */
     private function getContext()
     {

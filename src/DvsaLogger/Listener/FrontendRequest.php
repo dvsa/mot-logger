@@ -81,6 +81,8 @@ class FrontendRequest implements ListenerAggregateInterface, LoggerAwareInterfac
 
     /**
      * @param MvcEvent $event
+     *
+     * @return void
      */
     public function logRequest(MvcEvent $event)
     {

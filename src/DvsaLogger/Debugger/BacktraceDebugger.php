@@ -26,5 +26,7 @@ class BacktraceDebugger
                 return new Call($item['class'], $item['function']);
             }
         }
+
+        return null;
     }
 }

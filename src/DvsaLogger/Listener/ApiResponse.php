@@ -144,6 +144,8 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
 
     /**
      * @param MvcEvent $event
+     *
+     * @return void
      */
     public function logResponse(MvcEvent $event)
     {
@@ -154,10 +156,14 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
 
     /**
      * @param EventInterface $event
+     *
+     * @return void
      */
     public function shutdown(EventInterface $event)
     {
-        foreach ($this->log->getWriters() as $writer) {
+        $writers = $this->log->getWriters();
+
+        foreach ($writers as $writer) {
             $writer->shutdown();
         }
     }
