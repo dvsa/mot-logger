@@ -5,6 +5,7 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Service\DoctrineQueryLoggerService;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Log\LoggerInterface;
 
 /**
  * Class DoctrineQueryLoggerServiceFactory
@@ -37,8 +38,11 @@ class DoctrineQueryLoggerServiceFactory implements FactoryInterface
             $enabled = $config['DvsaLogger']['loggers']['doctrine_query']['enabled'];
         }
 
+        /** @var LoggerInterface */
+        $logger = $container->get('DvsaLogger\DoctrineQueryLogger');
+
         return new DoctrineQueryLoggerService(
-            $container->get('DvsaLogger\DoctrineQueryLogger'),
+            $logger,
             $enabled
         );
     }

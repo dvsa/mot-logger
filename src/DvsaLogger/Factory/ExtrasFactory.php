@@ -27,7 +27,10 @@ class ExtrasFactory implements FactoryInterface
         /** @var array */
         $config = $container->get('config');
 
-        $routeMatch = $container->get('Application')->getMvcEvent()->getRouteMatch();
+        /** @var \Laminas\Mvc\Application */
+        $application = $container->get('Application');
+
+        $routeMatch = $application->getMvcEvent()->getRouteMatch();
 
         /** @var WebAccessTokenService */
         $tokenService = $container->get('tokenService');

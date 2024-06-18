@@ -136,6 +136,7 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->getListeners() as $index => $listener) {
+            // @BUG $events->detach returns null
             if ($events->detach($listener)) {
                 $this->removeListener($index);
             }
@@ -155,12 +156,11 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     }
 
     /**
-     * @param EventInterface $event
-     *
      * @return void
      */
-    public function shutdown(EventInterface $event)
+    public function shutdown()
     {
+        /** @var \Laminas\Log\Writer\WriterInterface[] */
         $writers = $this->log->getWriters();
 
         foreach ($writers as $writer) {

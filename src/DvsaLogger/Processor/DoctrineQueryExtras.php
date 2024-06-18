@@ -53,7 +53,7 @@ class DoctrineQueryExtras implements ProcessorInterface
         }
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
-        /** @var \Laminas\Stdlib\ParametersInterface */
+        /** @var \Laminas\Stdlib\ParametersInterface<?string, ?mixed> */
         $query = $this->request->getQuery();
         $query_string = json_encode($query->toArray());
         /** @var string */

@@ -73,6 +73,7 @@ class FrontendRequest implements ListenerAggregateInterface, LoggerAwareInterfac
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->getListeners() as $index => $listener) {
+            // @BUG $events->detach returns null
             if ($events->detach($listener)) {
                 $this->removeListener($index);
             }

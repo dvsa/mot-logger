@@ -8,7 +8,6 @@ use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
-use Laminas\Stdlib\RequestInterface;
 
 /**
  * Class Extras
@@ -42,7 +41,7 @@ class Extras implements ProcessorInterface
         MotFrontendIdentityProvider $identity,
         WebAccessTokenService $tokenService,
         $routeMatch,
-        $requestUuid
+        string $requestUuid
     ) {
         $this->request = $request;
         $this->requestUuid = $requestUuid;
@@ -66,7 +65,7 @@ class Extras implements ProcessorInterface
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
         $parameters = [];
-        /** @var \Laminas\Stdlib\ParametersInterface */
+        /** @var \Laminas\Stdlib\ParametersInterface<string, mixed> */
         $query = $this->request->getQuery();
         $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();

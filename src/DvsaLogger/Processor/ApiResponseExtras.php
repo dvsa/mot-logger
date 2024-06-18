@@ -58,7 +58,7 @@ class ApiResponseExtras implements ProcessorInterface
         }
 
         $parameters = [];
-        /** @var \Laminas\Stdlib\ParametersInterface */
+        /** @var \Laminas\Stdlib\ParametersInterface<?string, ?mixed> */
         $query = $this->request->getQuery();
         $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();

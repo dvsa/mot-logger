@@ -51,6 +51,8 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     }
 
     /**
+     * @param Event<string, array> $e
+     *
      * @return void
      */
     public function logStartOfRequest(Event $e)

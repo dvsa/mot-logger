@@ -8,9 +8,7 @@ use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\GenericHeader;
 use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
-use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
-use Laminas\Stdlib\RequestInterface;
 use Laminas\Http\Request;
 
 /**
@@ -28,7 +26,6 @@ class ApiRequestExtras implements ProcessorInterface
     protected $identity;
     /** @var WebAccessTokenService $tokenService */
     protected $tokenService;
-    protected $routeMatch;
 
     public function __construct(Request $request, string $uuid)
     {
