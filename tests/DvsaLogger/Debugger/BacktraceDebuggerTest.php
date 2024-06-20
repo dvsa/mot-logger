@@ -6,10 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class BacktraceDebuggerTest extends TestCase
 {
-    /**
-     * @return void
-     */
-    public function testItExtractsCallFromBacktrace()
+    public function testItExtractsCallFromBacktrace(): void
     {
         $debugger = new BacktraceDebugger();
 
@@ -22,10 +19,7 @@ class BacktraceDebuggerTest extends TestCase
         );
     }
 
-    /**
-     * @return void
-     */
-    public function testItReturnsNullIfCallCannotBeFound()
+    public function testItReturnsNullIfCallCannotBeFound(): void
     {
         $debugger = new BacktraceDebugger();
 
@@ -34,10 +28,7 @@ class BacktraceDebuggerTest extends TestCase
         $this->assertNull($call);
     }
 
-    /**
-     * @return void
-     */
-    public function testItMatchesClassesByPartialName()
+    public function testItMatchesClassesByPartialName(): void
     {
         $debugger = new BacktraceDebugger();
 
@@ -49,10 +40,7 @@ class BacktraceDebuggerTest extends TestCase
         );
     }
 
-    /**
-     * @return void
-     */
-    public function testItFindsMethodCallsForClassParents()
+    public function testItFindsMethodCallsForClassParents(): void
     {
         $debugger = new BacktraceDebugger();
 

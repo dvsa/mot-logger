@@ -18,10 +18,7 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    /**
-     * @return void
-     */
-    public function testItDoesNotLogIfNotEnabled()
+    public function testItDoesNotLogIfNotEnabled(): void
     {
         $queryLoggerService = new DoctrineQueryLoggerService($this->logger);
 
@@ -31,10 +28,7 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $queryLoggerService->stopQuery();
     }
 
-    /**
-     * @return void
-     */
-    public function testItLogsQueryIfEnabled()
+    public function testItLogsQueryIfEnabled(): void
     {
         $queryLoggerService = new DoctrineQueryLoggerService($this->logger, true);
 
@@ -56,10 +50,7 @@ class DoctrineQueryLoggerServiceTest extends TestCase
         $queryLoggerService->stopQuery();
     }
 
-    /**
-     * @return void
-     */
-    public function testItLogsRepositoryMethod()
+    public function testItLogsRepositoryMethod(): void
     {
         $debugger = $this->createMock(BacktraceDebugger::class);
 
