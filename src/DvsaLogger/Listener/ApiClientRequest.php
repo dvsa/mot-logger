@@ -43,10 +43,8 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->listeners as $index => $listener) {
-            // @BUG $events->detach returns null
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
+            $events->detach($listener);
+            unset($this->listeners[$index]);
         }
     }
 
