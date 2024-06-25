@@ -57,7 +57,6 @@ class DoctrineQueryLoggerService implements LoggerAwareInterface
         $this->sql = $sql;
         $this->params = $params;
         $this->types = $types;
-        //  The line below was previous $this->startTime = microtime(1). Presumably the 1 is supposed to be true
         $this->startTime = microtime(true);
     }
 
@@ -75,7 +74,6 @@ class DoctrineQueryLoggerService implements LoggerAwareInterface
                     'query'      => $this->sql,
                     'parameters' => json_encode($this->params),
                     'types'      => $this->types,
-                    // 'query_time' => microtime(1) - $this->startTime,
                     'query_time' => microtime(true) - $this->startTime,
                     'context'    => json_encode($this->getContext()),
                 ]
