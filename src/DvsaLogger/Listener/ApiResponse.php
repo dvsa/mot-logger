@@ -2,14 +2,12 @@
 
 namespace DvsaLogger\Listener;
 
-use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
 use Laminas\Log\Logger as Log;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Stdlib\CallbackHandler;
 
 /**
  * Class ApiResponse

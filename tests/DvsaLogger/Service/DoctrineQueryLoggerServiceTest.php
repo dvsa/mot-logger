@@ -2,7 +2,6 @@
 
 namespace DvsaLogger\Service;
 
-use Doctrine\ORM\EntityRepository;
 use DvsaLogger\Debugger\BacktraceDebugger;
 use DvsaLogger\Debugger\Call;
 use Laminas\Log\LoggerInterface;
@@ -10,7 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class DoctrineQueryLoggerServiceTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject&LoggerInterface */
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject&LoggerInterface
+     *
+     * @psalm-suppress PropertyNotSetInConstructor constructor is defined in the base class
+     */
     private $logger;
 
     protected function setUp(): void

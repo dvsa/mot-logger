@@ -3,7 +3,6 @@
 namespace DvsaLogger\Service;
 
 use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\ORM\EntityRepository;
 use DvsaLogger\Debugger\BacktraceDebugger;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
@@ -37,6 +36,8 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
      */
     public function __construct($logger, $enabled = false, BacktraceDebugger $debugger = null)
     {
+        $this->sql = '';
+        $this->startTime = 0;
         $this->logger = $logger;
         $this->enabled = $enabled;
         $this->debugger = $debugger ?: new BacktraceDebugger();
