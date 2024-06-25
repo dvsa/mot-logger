@@ -8,6 +8,7 @@ use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
+use Laminas\Router\RouteMatch;
 
 /**
  * Class Extras
@@ -27,21 +28,21 @@ class Extras implements ProcessorInterface
     protected $identity;
     /** @var TokenServiceInterface $tokenService */
     protected $tokenService;
-    /** @var string */
+    /** @var RouteMatch|null */
     protected $routeMatch;
 
     /**
      * @param HttpRequest $request
      * @param MotFrontendIdentityProviderInterface $identity
      * @param TokenServiceInterface $tokenService
-     * @param string $routeMatch
+     * @param RouteMatch|null $routeMatch
      * @param $requestUuid
      */
     public function __construct(
         HttpRequest $request,
         MotFrontendIdentityProviderInterface $identity,
         TokenServiceInterface $tokenService,
-        string $routeMatch,
+        RouteMatch|null $routeMatch,
         string $requestUuid
     ) {
         $this->request = $request;
