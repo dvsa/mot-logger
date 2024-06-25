@@ -7,6 +7,7 @@ use Laminas\Http\Header\GenericHeader;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
+use Laminas\Stdlib\ParametersInterface;
 
 /**
  * Class DoctrineQueryExtras
@@ -53,7 +54,7 @@ class DoctrineQueryExtras implements ProcessorInterface
         }
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
-        /** @var \Laminas\Stdlib\ParametersInterface<?string, ?mixed> */
+        /** @var ParametersInterface<?string, ?mixed> */
         $query = $this->request->getQuery();
         $query_string = json_encode($query->toArray());
         /** @var string */

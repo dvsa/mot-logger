@@ -8,6 +8,7 @@ use Laminas\Http\Header\GenericHeader;
 use Laminas\Log\Processor\ProcessorInterface;
 use Laminas\Http\Response;
 use Laminas\Http\Request;
+use Laminas\Stdlib\ParametersInterface;
 
 /**
  * Class Extras
@@ -52,7 +53,7 @@ class ApiResponseExtras implements ProcessorInterface
         }
 
         $parameters = [];
-        /** @var \Laminas\Stdlib\ParametersInterface<?string, ?mixed> */
+        /** @var ParametersInterface<?string, ?mixed> */
         $query = $this->request->getQuery();
         $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();

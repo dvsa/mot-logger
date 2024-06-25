@@ -5,6 +5,7 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Processor\DoctrineQueryExtras;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Http\Request;
 
 /**
  * Class DoctrineQueryExtrasProcessorFactory
@@ -25,7 +26,7 @@ class DoctrineQueryExtrasFactory implements FactoryInterface
         /** @var array */
         $config = $container->get('config');
         //get request
-        /** @var \Laminas\Http\Request */
+        /** @var Request */
         $request = $container->get('Request');
         // inject request into the extras processor
         /** @var array */

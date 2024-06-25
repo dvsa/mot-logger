@@ -5,6 +5,7 @@ namespace DvsaLogger\Service;
 use DvsaLogger\Debugger\BacktraceDebugger;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
+use Laminas\Log\LoggerInterface;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -31,7 +32,7 @@ class DoctrineQueryLoggerService implements LoggerAwareInterface
     protected $debugger;
 
     /**
-     * @param \Laminas\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      * @param bool $enabled
      */
     public function __construct($logger, $enabled = false, BacktraceDebugger $debugger = null)

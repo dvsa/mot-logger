@@ -8,6 +8,7 @@ use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Log\Processor\ProcessorInterface;
 use Laminas\Http\Request;
+use Laminas\Stdlib\ParametersInterface;
 
 /**
  * Class Extras
@@ -52,7 +53,7 @@ class ApiRequestExtras implements ProcessorInterface
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
         $parameters = [];
-        /** @var \Laminas\Stdlib\ParametersInterface<string, string> */
+        /** @var ParametersInterface<string, string> */
         $query = $this->request->getQuery();
         $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();

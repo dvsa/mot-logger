@@ -5,6 +5,8 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Processor\Extras;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Http\Request;
+use Laminas\Mvc\Application;
 use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
 use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 
@@ -27,7 +29,7 @@ class ExtrasFactory implements FactoryInterface
         /** @var array */
         $config = $container->get('config');
 
-        /** @var \Laminas\Mvc\Application */
+        /** @var Application */
         $application = $container->get('Application');
 
         $routeMatch = $application->getMvcEvent()->getRouteMatch();
@@ -38,7 +40,7 @@ class ExtrasFactory implements FactoryInterface
         /** @var MotFrontendIdentityProviderInterface */
         $identity = $container->get('MotIdentityProvider');
         // get request
-        /** @var \Laminas\Http\Request */
+        /** @var Request */
         $request = $container->get('Request');
         // inject request into the extras processor
         /** @var array */
