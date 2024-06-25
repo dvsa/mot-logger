@@ -2,8 +2,8 @@
 
 namespace DvsaLogger\Processor;
 
-use Core\Service\MotFrontendIdentityProvider;
-use DvsaAuthentication\Service\WebAccessTokenService;
+use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
+use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\GenericHeader;
 use Laminas\Http\Header\UserAgent;
@@ -22,9 +22,9 @@ class ApiRequestExtras implements ProcessorInterface
     protected $request;
     /** @var string */
     protected $requestUuid;
-    /** @var MotFrontendIdentityProvider $identity */
+    /** @var MotFrontendIdentityProviderInterface $identity */
     protected $identity;
-    /** @var WebAccessTokenService $tokenService */
+    /** @var TokenServiceInterface $tokenService */
     protected $tokenService;
 
     public function __construct(Request $request, string $uuid)

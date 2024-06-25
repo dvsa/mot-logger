@@ -5,8 +5,8 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Processor\Extras;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Core\Service\MotFrontendIdentityProvider;
-use DvsaAuthentication\Service\WebAccessTokenService;
+use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
+use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 
 /**
  * Class ExtrasProcessorFactory
@@ -32,10 +32,10 @@ class ExtrasFactory implements FactoryInterface
 
         $routeMatch = $application->getMvcEvent()->getRouteMatch();
 
-        /** @var WebAccessTokenService */
+        /** @var TokenServiceInterface */
         $tokenService = $container->get('tokenService');
 
-        /** @var MotFrontendIdentityProvider */
+        /** @var MotFrontendIdentityProviderInterface */
         $identity = $container->get('MotIdentityProvider');
         // get request
         /** @var \Laminas\Http\Request */

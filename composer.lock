@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d67d90a9c952419146a7a47910abe22e",
+    "content-hash": "328e95557f963164524ad6d9acde870d",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -1407,6 +1407,60 @@
             "time": "2023-05-17T18:32:04+00:00"
         },
         {
+            "name": "dvsa/mot-application-logger",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dvsa/mot-application-logger.git",
+                "reference": "8414ff567616c20c620580831d3025f287840d72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dvsa/mot-application-logger/zipball/8414ff567616c20c620580831d3025f287840d72",
+                "reference": "8414ff567616c20c620580831d3025f287840d72",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-dependency-plugin": "^2",
+                "laminas/laminas-eventmanager": "^3.2",
+                "laminas/laminas-log": "^2.10",
+                "laminas/laminas-mvc": "^3.1",
+                "laminas/laminas-mvc-plugin-prg": "^1.1",
+                "laminas/laminas-servicemanager": "^3.10.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "captainhook/captainhook": "^5.16",
+                "captainhook/plugin-composer": "^5.3",
+                "dvsa/coding-standards": "1.0.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DvsaApplicationLogger\\": "src",
+                    "DvsaApplicationLoggerTest\\": "test"
+                },
+                "classmap": [
+                    "Module.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Utility for logging MOT Web App and API exceptions to defined formats.",
+            "keywords": [
+                "laminas",
+                "logging"
+            ],
+            "support": {
+                "issues": "https://github.com/dvsa/mot-application-logger/issues",
+                "source": "https://github.com/dvsa/mot-application-logger/tree/v2.0.0"
+            },
+            "time": "2023-09-20T13:34:05+00:00"
+        },
+        {
             "name": "laminas/laminas-authentication",
             "version": "2.15.0",
             "source": {
@@ -2655,6 +2709,72 @@
             "time": "2023-03-15T10:21:03+00:00"
         },
         {
+            "name": "laminas/laminas-mvc-plugin-prg",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-mvc-plugin-prg.git",
+                "reference": "b51e7ba892e52c6a80ce8c7dc7f8c429e3937516"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-prg/zipball/b51e7ba892e52c6a80ce8c7dc7f8c429e3937516",
+                "reference": "b51e7ba892e52c6a80ce8c7dc7f8c429e3937516",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-mvc": "^3.3.3",
+                "laminas/laminas-session": "^2.12.1",
+                "laminas/laminas-stdlib": "^3.10.1",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "conflict": {
+                "zendframework/zend-mvc-plugin-prg": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~2.5.0",
+                "phpunit/phpunit": "^10.4",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^5.16"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "component": "Laminas\\Mvc\\Plugin\\Prg"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Mvc\\Plugin\\Prg\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Post/Redirect/Get plugin for laminas-mvc controllers",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "laminas",
+                "mvc"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-mvc-plugin-prg/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-mvc-plugin-prg/issues",
+                "rss": "https://github.com/laminas/laminas-mvc-plugin-prg/releases.atom",
+                "source": "https://github.com/laminas/laminas-mvc-plugin-prg"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2023-12-01T06:06:12+00:00"
+        },
+        {
             "name": "laminas/laminas-paginator",
             "version": "2.17.0",
             "source": {
@@ -2893,6 +3013,87 @@
                 }
             ],
             "time": "2023-10-10T21:23:36+00:00"
+        },
+        {
+            "name": "laminas/laminas-session",
+            "version": "2.16.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-session.git",
+                "reference": "9c845a0361625d5775cad6f043716196201ad41f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/9c845a0361625d5775cad6f043716196201ad41f",
+                "reference": "9c845a0361625d5775cad6f043716196201ad41f",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-eventmanager": "^3.5",
+                "laminas/laminas-servicemanager": "^3.15.1",
+                "laminas/laminas-stdlib": "^3.10.1",
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+            },
+            "conflict": {
+                "zendframework/zend-session": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-cache": "^3.8",
+                "laminas/laminas-cache-storage-adapter-memory": "^2.2",
+                "laminas/laminas-coding-standard": "~2.4.0",
+                "laminas/laminas-db": "^2.15",
+                "laminas/laminas-http": "^2.17.1",
+                "laminas/laminas-validator": "^2.28",
+                "mongodb/mongodb": "~1.13.0",
+                "phpunit/phpunit": "^9.5.26",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^5.0"
+            },
+            "suggest": {
+                "laminas/laminas-cache": "Laminas\\Cache component",
+                "laminas/laminas-db": "Laminas\\Db component",
+                "laminas/laminas-http": "Laminas\\Http component",
+                "laminas/laminas-servicemanager": "Laminas\\ServiceManager component",
+                "laminas/laminas-validator": "Laminas\\Validator component",
+                "mongodb/mongodb": "If you want to use the MongoDB session save handler"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "component": "Laminas\\Session",
+                    "config-provider": "Laminas\\Session\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Session\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Object-oriented interface to PHP sessions and storage",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "laminas",
+                "session"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-session/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-session/issues",
+                "rss": "https://github.com/laminas/laminas-session/releases.atom",
+                "source": "https://github.com/laminas/laminas-session"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2022-12-04T11:15:36+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",

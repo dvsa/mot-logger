@@ -2,8 +2,8 @@
 
 namespace DvsaLogger\Processor;
 
-use Core\Service\MotFrontendIdentityProvider;
-use DvsaAuthentication\Service\WebAccessTokenService;
+use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
+use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
@@ -23,23 +23,23 @@ class Extras implements ProcessorInterface
     protected $request;
     /** @var string */
     protected $requestUuid;
-    /** @var MotFrontendIdentityProvider $identity */
+    /** @var MotFrontendIdentityProviderInterface $identity */
     protected $identity;
-    /** @var WebAccessTokenService $tokenService */
+    /** @var TokenServiceInterface $tokenService */
     protected $tokenService;
     protected $routeMatch;
 
     /**
      * @param HttpRequest $request
-     * @param \Core\Service\MotFrontendIdentityProvider $identity
-     * @param \DvsaAuthentication\Service\WebAccessTokenService $tokenService
+     * @param MotFrontendIdentityProviderInterface $identity
+     * @param TokenServiceInterface $tokenService
      * @param $routeMatch
      * @param $requestUuid
      */
     public function __construct(
         HttpRequest $request,
-        MotFrontendIdentityProvider $identity,
-        WebAccessTokenService $tokenService,
+        MotFrontendIdentityProviderInterface $identity,
+        TokenServiceInterface $tokenService,
         $routeMatch,
         string $requestUuid
     ) {
