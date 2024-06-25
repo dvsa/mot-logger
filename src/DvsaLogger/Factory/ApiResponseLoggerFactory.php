@@ -14,6 +14,8 @@ use Laminas\Log\Processor\ProcessorInterface;
  * Class ApiResponseLoggerFactory
  *
  * @package DvsaLogger\Factory
+ *
+ * @psalm-suppress MissingConstructor
  */
 class ApiResponseLoggerFactory implements FactoryInterface
 {

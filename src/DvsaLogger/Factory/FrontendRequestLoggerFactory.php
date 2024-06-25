@@ -12,7 +12,10 @@ use Laminas\Log\Processor\ProcessorInterface;
 
 /**
  * Class FrontendRequestLoggerFactory
+ *
  * @package DvsaLogger\Factory
+ *
+ * @psalm-suppress MissingConstructor
  */
 class FrontendRequestLoggerFactory implements FactoryInterface
 {

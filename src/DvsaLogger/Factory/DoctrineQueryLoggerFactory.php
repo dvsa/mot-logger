@@ -14,6 +14,8 @@ use Laminas\Log\Processor\ProcessorInterface;
  * Class DoctrineQueryLoggerFactory
  *
  * @package DvsaLogger\Factory
+ *
+ * @psalm-suppress MissingConstructor
  */
 class DoctrineQueryLoggerFactory implements FactoryInterface
 {

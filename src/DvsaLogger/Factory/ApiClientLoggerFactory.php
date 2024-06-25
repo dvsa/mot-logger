@@ -12,6 +12,8 @@ use Laminas\Log\Processor\ProcessorInterface;
 
 /**
  * Class ApiClientLoggerFactory.
+ *
+ * @psalm-suppress MissingConstructor
  */
 class ApiClientLoggerFactory implements FactoryInterface
 {

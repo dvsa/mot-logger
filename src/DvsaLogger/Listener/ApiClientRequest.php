@@ -13,6 +13,8 @@ use Laminas\Log\LoggerAwareTrait;
  * Class ApiClientRequest
  *
  * @package DvsaLogger\Listener
+ *
+ * @psalm-suppress MissingConstructor
  */
 class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterface
 {
