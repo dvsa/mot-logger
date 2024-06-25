@@ -27,20 +27,21 @@ class Extras implements ProcessorInterface
     protected $identity;
     /** @var TokenServiceInterface $tokenService */
     protected $tokenService;
+    /** @var string */
     protected $routeMatch;
 
     /**
      * @param HttpRequest $request
      * @param MotFrontendIdentityProviderInterface $identity
      * @param TokenServiceInterface $tokenService
-     * @param $routeMatch
+     * @param string $routeMatch
      * @param $requestUuid
      */
     public function __construct(
         HttpRequest $request,
         MotFrontendIdentityProviderInterface $identity,
         TokenServiceInterface $tokenService,
-        $routeMatch,
+        string $routeMatch,
         string $requestUuid
     ) {
         $this->request = $request;
@@ -72,8 +73,9 @@ class Extras implements ProcessorInterface
         $route = '';
         $request_method = $this->request->getMethod();
         $username = '';
-        if ($this->identity->getIdentity()) {
-            $username = $this->identity->getIdentity()->getUsername();
+        $identity = $this->identity->getIdentity();
+        if ($identity !== null) {
+            $username = $identity->getUsername();
         }
         $userAgent = '';
         $header = $this->request->getHeader('UserAgent');
