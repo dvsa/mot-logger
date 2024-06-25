@@ -2,17 +2,17 @@
 
 namespace DvsaLogger\Service;
 
-use Doctrine\DBAL\Logging\SQLLogger;
 use DvsaLogger\Debugger\BacktraceDebugger;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Class DoctrineLoggerService
  *
  * @package DvsaDoctrineLogger\Service
  */
-class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
+class DoctrineQueryLoggerService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -44,9 +44,15 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Logs a SQL statement somewhere.
+     *
+     * @param string                                                                    $sql    SQL statement
+     * @param list<mixed>|array<string, mixed>|null                                     $params Statement parameters
+     * @param array<int, Type|int|string|null>|array<string, Type|int|string|null>|null $types  Parameter types
+     *
+     * @return void
      */
-    public function startQuery($sql, array $params = null, array $types = null)
+    public function startQuery(string $sql, array $params = null, array $types = null)
     {
         $this->sql = $sql;
         $this->params = $params;
@@ -56,7 +62,9 @@ class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Marks the last started query as stopped. This can be used for timing of queries.
+     *
+     * @return void
      */
     public function stopQuery()
     {

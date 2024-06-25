@@ -13,6 +13,8 @@ use Laminas\Mvc\MvcEvent;
  * Class ApiResponse
  *
  * @package DvsaLogger\Listener
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
 {
@@ -30,6 +32,8 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
 
     /**
      * @var Log
+     *
+     * @psalm-suppress PropertyNotSetInConstructor
      */
     protected $log;
 
