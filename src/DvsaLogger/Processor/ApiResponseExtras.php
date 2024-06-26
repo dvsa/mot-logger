@@ -17,12 +17,11 @@ use Laminas\Stdlib\ParametersInterface;
  */
 class ApiResponseExtras implements ProcessorInterface
 {
-    /** @var Request */
-    protected $request;
-    /** @var string */
-    protected $requestUuid;
-    /** @var Response */
-    protected $response;
+    protected Request $request;
+
+    protected string $requestUuid;
+
+    protected Response $response;
 
     public function __construct(Request $request, Response $response, string $uuid)
     {

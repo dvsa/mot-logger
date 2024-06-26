@@ -45,6 +45,7 @@
             "phpunit"
         ],
         "phpcs": "./vendor/bin/phpcs .",
+        "phpcs-fix": "./vendor/bin/phpcbf .",
         "phpstan": "./vendor/bin/phpstan",
         "psalm": "./vendor/bin/psalm"
     },
