@@ -13,8 +13,6 @@ use Laminas\Mvc\MvcEvent;
  * Class ApiResponse
  *
  * @package DvsaLogger\Listener
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
 {
@@ -31,28 +29,24 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     protected $listeners = array();
 
     /**
-     * @var Log
-     *
-     * @psalm-suppress PropertyNotSetInConstructor
+     * @var Log|null
      */
-    protected $log;
+    protected $logger;
 
     /**
      * @param Log $log
      */
     public function __construct(Log $log = null)
     {
-        if (!is_null($log)) {
-            $this->setLog($log);
-        }
+        $this->logger = $log;
     }
 
     /**
-     * @return Log
+     * @return Log|null
      */
     public function getLog()
     {
-        return $this->log;
+        return $this->logger;
     }
 
     /**
@@ -62,7 +56,7 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
      */
     public function setLog(Log $log)
     {
-        $this->log = $log;
+        $this->logger = $log;
 
         return $this;
     }
@@ -151,7 +145,7 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     public function logResponse(MvcEvent $event)
     {
         if ($event->getRequest() instanceof \Laminas\Http\PhpEnvironment\Request) {
-            $this->logger->debug('');
+            $this->logger?->debug('');
         }
     }
 
@@ -161,7 +155,7 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     public function shutdown()
     {
         /** @var \Laminas\Log\Writer\WriterInterface[] */
-        $writers = $this->log->getWriters();
+        $writers = $this->logger?->getWriters();
 
         foreach ($writers as $writer) {
             $writer->shutdown();
