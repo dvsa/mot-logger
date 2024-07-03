@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3754b6d3cbffa6992393bac2c15ee758",
+    "content-hash": "cdf58fe3c9d2968fc5901645656e281f",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -1407,32 +1407,35 @@
         },
         {
             "name": "dvsa/mot-application-logger",
-            "version": "v2.0.0",
+            "version": "dev-feat/bl-15048-add-static-analysis",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dvsa/mot-application-logger.git",
-                "reference": "8414ff567616c20c620580831d3025f287840d72"
+                "reference": "da0e7523c1ece14dcd44de0fee86742b1eea21d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dvsa/mot-application-logger/zipball/8414ff567616c20c620580831d3025f287840d72",
-                "reference": "8414ff567616c20c620580831d3025f287840d72",
+                "url": "https://api.github.com/repos/dvsa/mot-application-logger/zipball/da0e7523c1ece14dcd44de0fee86742b1eea21d7",
+                "reference": "da0e7523c1ece14dcd44de0fee86742b1eea21d7",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-dependency-plugin": "^2",
+                "laminas/laminas-dependency-plugin": "^2.6.0",
                 "laminas/laminas-eventmanager": "^3.2",
                 "laminas/laminas-log": "^2.10",
                 "laminas/laminas-mvc": "^3.1",
                 "laminas/laminas-mvc-plugin-prg": "^1.1",
                 "laminas/laminas-servicemanager": "^3.10.0",
-                "php": "^8.1"
+                "php": "^8.2"
             },
             "require-dev": {
                 "captainhook/captainhook": "^5.16",
                 "captainhook/plugin-composer": "^5.3",
-                "dvsa/coding-standards": "1.0.0",
-                "phpunit/phpunit": "^9.0"
+                "dvsa/coding-standards": "^2.0",
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^9.0",
+                "squizlabs/php_codesniffer": "^3.10",
+                "vimeo/psalm": "^5.13"
             },
             "type": "library",
             "autoload": {
@@ -1455,9 +1458,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dvsa/mot-application-logger/issues",
-                "source": "https://github.com/dvsa/mot-application-logger/tree/v2.0.0"
+                "source": "https://github.com/dvsa/mot-application-logger/tree/feat/bl-15048-add-static-analysis"
             },
-            "time": "2023-09-20T13:34:05+00:00"
+            "time": "2024-07-02T15:19:36+00:00"
         },
         {
             "name": "laminas/laminas-authentication",
@@ -8008,7 +8011,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "dvsa/mot-application-logger": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
