@@ -7,13 +7,16 @@ use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
 use Laminas\Log\LoggerInterface;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
  * Class DoctrineLoggerService
  *
  * @package DvsaDoctrineLogger\Service
+ *
+ * @psalm-suppress DeprecatedInterface
  */
-class DoctrineQueryLoggerService implements LoggerAwareInterface
+class DoctrineQueryLoggerService implements SQLLogger, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -53,7 +56,7 @@ class DoctrineQueryLoggerService implements LoggerAwareInterface
      *
      * @return void
      */
-    public function startQuery(string $sql, array $params = null, array $types = null)
+    public function startQuery($sql, array $params = null, array $types = null)
     {
         $this->sql = $sql;
         $this->params = $params;
