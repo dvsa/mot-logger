@@ -73,18 +73,19 @@ class FrontendRequest implements ListenerAggregateInterface, LoggerAwareInterfac
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->getListeners() as $index => $listener) {
-            if ($events->detach($listener)) {
-                $this->removeListener($index);
-            }
+            $events->detach($listener);
+            $this->removeListener($index);
         }
     }
 
     /**
      * @param MvcEvent $event
+     *
+     * @return void
      */
     public function logRequest(MvcEvent $event)
     {
-        if ($event->getRequest() instanceOf \Laminas\Http\PhpEnvironment\Request) {
+        if ($event->getRequest() instanceof \Laminas\Http\PhpEnvironment\Request) {
             $this->logger->debug('');
         }
     }

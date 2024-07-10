@@ -13,12 +13,15 @@ use Laminas\Log\LoggerAwareTrait;
  * Class ApiClientRequest
  *
  * @package DvsaLogger\Listener
+ *
+ * @psalm-suppress MissingConstructor
  */
 class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    protected $listeners = array();
+    /** @var array */
+    protected $listeners = [];
 
     /** @var  Log $log */
     protected $log;
@@ -29,26 +32,34 @@ class ApiClientRequest implements ListenerAggregateInterface, LoggerAwareInterfa
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach(
-            'DvsaCommon\HttpRestJson\Client', 'startOfRequest',
-            array($this, 'logStartOfRequest'), 100
-        );
+        if ($sharedEvents !== null) {
+            $this->listeners[] = $sharedEvents->attach(
+                'DvsaCommon\HttpRestJson\Client',
+                'startOfRequest',
+                array($this, 'logStartOfRequest'),
+                100
+            );
+        }
     }
 
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->listeners as $index => $listener) {
-            // @BUG $events->detach returns null
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
+            $events->detach($listener);
+            unset($this->listeners[$index]);
         }
     }
 
+    /**
+     * @param Event<string, array> $e
+     *
+     * @return void
+     */
     public function logStartOfRequest(Event $e)
     {
         $this->logger->debug(
-            '', ['endpoint_uri'   => $e->getParam('resourcePath'),
+            '',
+            ['endpoint_uri'   => $e->getParam('resourcePath'),
                  'request_method' => $e->getParam(
                      'request_method'
                  ), 'parameters'  => $e->getParam('content')]

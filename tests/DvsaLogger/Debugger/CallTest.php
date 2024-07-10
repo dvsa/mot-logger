@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class CallTest extends TestCase
 {
-    public function testItExposesClassAndMethod()
+    public function testItExposesClassAndMethod(): void
     {
         $call = new Call('MyClass', 'myMethod');
 

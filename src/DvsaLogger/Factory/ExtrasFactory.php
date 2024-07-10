@@ -5,6 +5,10 @@ namespace DvsaLogger\Factory;
 use DvsaLogger\Processor\Extras;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Http\Request;
+use Laminas\Mvc\Application;
+use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
+use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 
 /**
  * Class ExtrasProcessorFactory
@@ -22,16 +26,26 @@ class ExtrasFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         // get config
+        /** @var array */
         $config = $container->get('config');
 
-        $routeMatch = $container->get('Application')->getMvcEvent()->getRouteMatch();
+        /** @var Application */
+        $application = $container->get('Application');
+
+        $routeMatch = $application->getMvcEvent()->getRouteMatch();
+
+        /** @var TokenServiceInterface */
         $tokenService = $container->get('tokenService');
 
+        /** @var MotFrontendIdentityProviderInterface */
         $identity = $container->get('MotIdentityProvider');
         // get request
+        /** @var Request */
         $request = $container->get('Request');
         // inject request into the extras processor
-        $processor = new Extras($request, $identity, $tokenService, $routeMatch, $config['DvsaLogger']['RequestUUID']);
+        /** @var array */
+        $dvsaLogger = $config['DvsaLogger'];
+        $processor = new Extras($request, $identity, $tokenService, $routeMatch, $dvsaLogger['RequestUUID']);
         return $processor;
     }
 }

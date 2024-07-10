@@ -2,13 +2,14 @@
 
 namespace DvsaLogger\Processor;
 
-use Core\Service\MotFrontendIdentityProvider;
-use DvsaAuthentication\Service\WebAccessTokenService;
+use DvsaLogger\Interfaces\MotFrontendIdentityProviderInterface;
+use DvsaApplicationLogger\TokenService\TokenServiceInterface;
 use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Log\Processor\ProcessorInterface;
-use Laminas\Stdlib\RequestInterface;
+use Laminas\Router\RouteMatch;
+use Laminas\Stdlib\ParametersInterface;
 
 /**
  * Class Extras
@@ -17,29 +18,34 @@ use Laminas\Stdlib\RequestInterface;
  */
 class Extras implements ProcessorInterface
 {
-    const URI_MAX_LENGTH        = 255;
-    const USER_AGENT_MAX_LENGTH = 255;
+    private const URI_MAX_LENGTH        = 255;
+    private const USER_AGENT_MAX_LENGTH = 255;
 
-    /** @var null|RequestInterface */
-    protected $request = null;
+    /** @var HttpRequest */
+    protected $request;
+    /** @var string */
     protected $requestUuid;
-    /** @var MotFrontendIdentityProvider $identity */
+    /** @var MotFrontendIdentityProviderInterface $identity */
     protected $identity;
-    /** @var WebAccessTokenService $tokenService */
+    /** @var TokenServiceInterface $tokenService */
     protected $tokenService;
+    /** @var RouteMatch|null */
     protected $routeMatch;
 
     /**
-     * @param \Laminas\Stdlib\RequestInterface $request
-     * @param \Core\Service\MotFrontendIdentityProvider $identity
-     * @param \DvsaAuthentication\Service\WebAccessTokenService $tokenService
-     * @param $routeMatch
+     * @param HttpRequest $request
+     * @param MotFrontendIdentityProviderInterface $identity
+     * @param TokenServiceInterface $tokenService
+     * @param RouteMatch|null $routeMatch
      * @param $requestUuid
      */
     public function __construct(
-        RequestInterface $request, MotFrontendIdentityProvider $identity, WebAccessTokenService $tokenService,
-        $routeMatch, $requestUuid)
-    {
+        HttpRequest $request,
+        MotFrontendIdentityProviderInterface $identity,
+        TokenServiceInterface $tokenService,
+        RouteMatch|null $routeMatch,
+        string $requestUuid
+    ) {
         $this->request = $request;
         $this->requestUuid = $requestUuid;
         $this->identity = $identity;
@@ -56,22 +62,22 @@ class Extras implements ProcessorInterface
      */
     public function process(array $event)
     {
-        $uri = '';
-        if ($this->request instanceof HttpRequest) {
-            $uri = $this->request->getUriString();
-        }
+        $uri = $this->request->getUriString();
         $token = $this->tokenService->getToken();
 
         // get request uri and IP address and add it to the extras of the logger
         $remoteAddress = new RemoteAddress();
         $parameters = [];
-        $parameters['get_vars'] = $this->request->getQuery()->toArray();
+        /** @var ParametersInterface<string, mixed> */
+        $query = $this->request->getQuery();
+        $parameters['get_vars'] = $query->toArray();
         $parameters['post_vars'] = $this->request->getContent();
         $route = '';
         $request_method = $this->request->getMethod();
         $username = '';
-        if ($this->identity->getIdentity()) {
-            $username = $this->identity->getIdentity()->getUsername();
+        $identity = $this->identity->getIdentity();
+        if ($identity !== null) {
+            $username = $identity->getUsername();
         }
         $userAgent = '';
         $header = $this->request->getHeader('UserAgent');

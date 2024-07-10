@@ -2,14 +2,12 @@
 
 namespace DvsaLogger\Listener;
 
-use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
 use Laminas\Log\Logger as Log;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Log\LoggerAwareTrait;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Stdlib\CallbackHandler;
 
 /**
  * Class ApiResponse
@@ -31,26 +29,24 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     protected $listeners = array();
 
     /**
-     * @var Log
+     * @var Log|null
      */
-    protected $log;
+    protected $logger;
 
     /**
      * @param Log $log
      */
     public function __construct(Log $log = null)
     {
-        if (!is_null($log)) {
-            $this->setLog($log);
-        }
+        $this->logger = $log;
     }
 
     /**
-     * @return Log
+     * @return Log|null
      */
     public function getLog()
     {
-        return $this->log;
+        return $this->logger;
     }
 
     /**
@@ -60,7 +56,7 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
      */
     public function setLog(Log $log)
     {
-        $this->log = $log;
+        $this->logger = $log;
 
         return $this;
     }
@@ -136,28 +132,32 @@ class ApiResponse implements ListenerAggregateInterface, LoggerAwareInterface
     public function detach(EventManagerInterface $events)
     {
         foreach ($this->getListeners() as $index => $listener) {
-            if ($events->detach($listener)) {
-                $this->removeListener($index);
-            }
+            $events->detach($listener);
+            $this->removeListener($index);
         }
     }
 
     /**
      * @param MvcEvent $event
+     *
+     * @return void
      */
     public function logResponse(MvcEvent $event)
     {
-        if ($event->getRequest() instanceOf \Laminas\Http\PhpEnvironment\Request) {
-            $this->logger->debug('');
+        if ($event->getRequest() instanceof \Laminas\Http\PhpEnvironment\Request) {
+            $this->logger?->debug('');
         }
     }
 
     /**
-     * @param EventInterface $event
+     * @return void
      */
-    public function shutdown(EventInterface $event)
+    public function shutdown()
     {
-        foreach ($this->log->getWriters() as $writer) {
+        /** @var \Laminas\Log\Writer\WriterInterface[] */
+        $writers = $this->logger?->getWriters();
+
+        foreach ($writers as $writer) {
             $writer->shutdown();
         }
     }
