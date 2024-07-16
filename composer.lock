@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cdf58fe3c9d2968fc5901645656e281f",
+    "content-hash": "1b0a959badee2cccb721e12bb0545c73",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -1407,16 +1407,16 @@
         },
         {
             "name": "dvsa/mot-application-logger",
-            "version": "dev-feat/bl-15048-add-static-analysis",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dvsa/mot-application-logger.git",
-                "reference": "da0e7523c1ece14dcd44de0fee86742b1eea21d7"
+                "reference": "7f291b7df147dc549269e2323a4bca0e4f4f1441"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dvsa/mot-application-logger/zipball/da0e7523c1ece14dcd44de0fee86742b1eea21d7",
-                "reference": "da0e7523c1ece14dcd44de0fee86742b1eea21d7",
+                "url": "https://api.github.com/repos/dvsa/mot-application-logger/zipball/7f291b7df147dc549269e2323a4bca0e4f4f1441",
+                "reference": "7f291b7df147dc549269e2323a4bca0e4f4f1441",
                 "shasum": ""
             },
             "require": {
@@ -1458,9 +1458,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dvsa/mot-application-logger/issues",
-                "source": "https://github.com/dvsa/mot-application-logger/tree/feat/bl-15048-add-static-analysis"
+                "source": "https://github.com/dvsa/mot-application-logger/tree/v3.0.0"
             },
-            "time": "2024-07-02T15:19:36+00:00"
+            "time": "2024-07-15T11:24:28+00:00"
         },
         {
             "name": "laminas/laminas-authentication",
@@ -8011,9 +8011,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "dvsa/mot-application-logger": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
