@@ -170,26 +170,15 @@ return [
 
 The main logger class has been moved:
 
-| Old Class                             | New Class                    |
-|---------------------------------------|------------------------------|
-| `DvsaLogger\Logger\Logger`            | `MotLogger\Logger\MotLogger` |
-| `DvsaApplicationLogger\Logger\Logger` | `MotLogger\Logger\MotLogger` |
+| Old Class                             | New Class                     |
+|---------------------------------------|-------------------------------|
+| `DvsaLogger\Logger\Logger`            | `DvsaLogger\Logger\MotLogger` |
+| `DvsaApplicationLogger\Logger\Logger` | `DvsaLogger\Logger\MotLogger` |
 
 Legacy service names are still supported via aliases, so existing code will continue to work without changes.
 
 ### Step 4: PHP Version
 Ensure your application is running PHP 8.2 or higher. This is a required minimum for the new library.
-
-### Service Name Mapping
-
-The library provides backward compatibility aliases for legacy service names:
-
-| Old Service Name        | New Class                    |
-|-------------------------|------------------------------|
-| `DvsaLogger`            | `MotLogger\Logger\MotLogger` |
-| `DvsaApplicationLogger` | `MotLogger\Logger\MotLogger` |
-
-Legacy consuming application can continue using the old service names without modification, while new applications can and should use the new class names directly.
 
 ### Configuration Keys
 
