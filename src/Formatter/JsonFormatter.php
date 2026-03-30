@@ -7,6 +7,7 @@ namespace DvsaLogger\Formatter;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter as BaseJsonFormatter;
 use Monolog\LogRecord;
+use RuntimeException;
 
 /**
  * Custom JSON formatter for DVSA Logger.
@@ -14,7 +15,7 @@ use Monolog\LogRecord;
 class JsonFormatter implements FormatterInterface
 {
     /** @var list<string>  */
-    private const array FIELD_ORDER = [
+    private const FIELD_ORDER = [
         'microtimeTimestamp',
         'timestamp',
         'priority',
@@ -40,7 +41,7 @@ class JsonFormatter implements FormatterInterface
         $json = json_encode($data);
 
         if ($json === false) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Failed to encode log record to JSON: ' . json_last_error_msg()
             );
         }

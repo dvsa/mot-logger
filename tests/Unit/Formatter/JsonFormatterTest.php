@@ -13,7 +13,7 @@ class JsonFormatterTest extends TestCase
 {
     use LogRecordTrait;
 
-    private const array FIELD_ORDER = [
+    private const FIELD_ORDER = [
         'microtimeTimestamp',
         'timestamp',
         'priority',

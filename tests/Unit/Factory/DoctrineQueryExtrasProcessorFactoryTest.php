@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DvsaLoggerTest\Unit\Factory;
 
+use DateTimeImmutable;
 use DvsaLogger\Factory\DoctrineQueryExtrasProcessorFactory;
 use DvsaLogger\Processor\DoctrineQueryExtrasProcessor;
 use DvsaLogger\Util\LogRecordTrait;
@@ -96,14 +97,7 @@ class DoctrineQueryExtrasProcessorFactoryTest extends TestCase
         DoctrineQueryExtrasProcessor $processor,
         string $expectedUuid,
     ): void {
-        $record = new LogRecord(
-            datetime: new \DateTimeImmutable('2024-01-01T00:00:00Z'),
-            channel: 'test',
-            level: Level::Info,
-            message: 'msg',
-            context: [],
-            extra: []
-        );
+        $record = $this->createLogRecord(Level::Info, 'test');
         $result = $processor($record);
         $this->assertArrayHasKey('api_request_uuid', $result->extra);
         $this->assertSame($expectedUuid, $result->extra['api_request_uuid']);

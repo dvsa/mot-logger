@@ -17,7 +17,7 @@ use Throwable;
 
 class ExceptionListenerTest extends TestCase
 {
-    private const string EXCEPTION_MSG = 'Test exception';
+    private const EXCEPTION_MSG = 'Test exception';
 
     private array $originalEnv = [];
 

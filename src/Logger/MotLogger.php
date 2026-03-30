@@ -18,9 +18,9 @@ use Throwable;
 */
 class MotLogger
 {
-    public const string ERROR_LOG_LEVEL = 'ERROR';
-    public const string INFO_LOG_LEVEL = 'INFO';
-    public const string WARN_LOG_LEVEL = 'WARN';
+    public const ERROR_LOG_LEVEL = 'ERROR';
+    public const INFO_LOG_LEVEL = 'INFO';
+    public const WARN_LOG_LEVEL = 'WARN';
 
     private string $token = '';
     private string $traceId = '';

@@ -4,6 +4,7 @@
 
     namespace DvsaLogger\Util;
 
+    use DateTimeImmutable;
     use Monolog\Level;
     use Monolog\LogRecord;
     use Throwable;
@@ -32,7 +33,7 @@ trait LogRecordTrait
         }
 
         return new LogRecord(
-            datetime: new \DateTimeImmutable(),
+            datetime: new DateTimeImmutable(),
             channel: 'test',
             level: $level,
             message: $message,
@@ -48,7 +49,7 @@ trait LogRecordTrait
         ?array $context = [],
     ): LogRecord {
         return new LogRecord(
-            datetime: new \DateTimeImmutable(),
+            datetime: new DateTimeImmutable(),
             channel: 'test',
             level: $level,
             message: $message,

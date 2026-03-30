@@ -1,6 +1,6 @@
 <?php
 
-    namespace DvsaCommon\HttpRestJson;
+namespace DvsaCommon\HttpRestJson;
 
 class Client
 {

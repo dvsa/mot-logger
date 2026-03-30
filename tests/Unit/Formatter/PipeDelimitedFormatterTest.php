@@ -6,6 +6,7 @@ namespace DvsaLoggerTest\Unit\Formatter;
 
 use DvsaLogger\Formatter\PipeDelimitedFormatter;
 use DvsaLogger\Util\LogRecordTrait;
+use Exception;
 use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 
@@ -35,7 +36,7 @@ class PipeDelimitedFormatterTest extends TestCase
     {
         $formatter = new PipeDelimitedFormatter(true);
         $record = $this->createLogRecordWithException(
-            new \Exception('test exception', 500),
+            new Exception('test exception', 500),
             Level::Error,
             'exception message'
         );
@@ -45,7 +46,7 @@ class PipeDelimitedFormatterTest extends TestCase
         $this->assertStringStartsWith('^^*', $result);
         $this->assertStringContainsString('||', $result);
         $this->assertStringContainsString('exception message', $result);
-        $this->assertStringContainsString(\Exception::class, $result);
+        $this->assertStringContainsString(Exception::class, $result);
         $this->assertStringContainsString('500', $result);
     }
 

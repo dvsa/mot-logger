@@ -9,6 +9,7 @@
     use DvsaLogger\Contract\TokenServiceInterface;
     use DvsaLogger\Logger\MotLogger;
     use DvsaLogger\Processor\DvsaMetadataProcessor;
+    use Error;
     use Exception;
     use Monolog\Handler\HandlerInterface;
     use Monolog\Handler\TestHandler;
@@ -23,7 +24,7 @@
 
 class MotLoggerTest extends TestCase
 {
-    private const string TIMESTAMP_REGEX = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}$/';
+    private const TIMESTAMP_REGEX = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}$/';
 
     private TestHandler $testHandler;
 
@@ -304,7 +305,7 @@ class MotLoggerTest extends TestCase
         $motLogger = new MotLogger($this->monolog);
         $motLogger->info(
             'with-ex',
-            ['ex' => new \Exception('fail'), 'baz' => 'qux'],
+            ['ex' => new Exception('fail'), 'baz' => 'qux'],
         );
 
         $record = $this->testHandler->getRecords()[0];
@@ -363,7 +364,7 @@ class MotLoggerTest extends TestCase
             $getTimestamp->invoke($motLogger, 'bad');
             $this->fail('Expected error or exception for malformed microtime');
         } catch (Throwable $e) {
-            $this->assertTrue($e instanceof \Error || $e instanceof \Exception);
+            $this->assertTrue($e instanceof Error || $e instanceof Exception);
         }
     }
 

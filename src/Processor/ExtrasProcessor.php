@@ -16,8 +16,8 @@ use Monolog\LogRecord;
  */
 class ExtrasProcessor
 {
-    private const int URI_MAX_LENGTH        = 255;
-    private const int USER_AGENT_MAX_LENGTH = 255;
+    private const URI_MAX_LENGTH        = 255;
+    private const USER_AGENT_MAX_LENGTH = 255;
 
     public function __construct(
         private readonly array $requestExtras = [],

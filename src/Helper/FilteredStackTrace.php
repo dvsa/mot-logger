@@ -15,7 +15,7 @@ class FilteredStackTrace
     /**
      * Arguments to hide from stack trace
      */
-    private const string TRACE_EXCLUSIONS = "/^(password|pwd|pass|newPassword)$/";
+    private const TRACE_EXCLUSIONS = "/^(password|pwd|pass|newPassword)$/";
 
     public function getTraceAsString(Throwable $exception): string
     {

@@ -1,6 +1,6 @@
 <?php
 
-    namespace DvsaCommon\Exception;
+namespace DvsaCommon\Exception;
 
 class UnauthorisedException extends \RuntimeException
 {
