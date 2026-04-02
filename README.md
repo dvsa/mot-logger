@@ -13,7 +13,7 @@ This library provides a unified logging solution for the DVSA MOT applications, 
 
 - **Monolog-based logging** - Built on Monolog 3.x for robust logging capabilities
 - **Doctrine DBAL support** - Log SQL queries to database
-- **MVC Event Listeners** - Automatic request, response, and exception logging via Laminas
+- **MVC Event Listeners** - Automatic request, response and exception logging via Laminas
 - **Environment-aware log levels** - Different log levels per environment (dev, int, prod, etc.)
 - **Sensitive data masking** - Automatic masking of passwords and sensitive fields
 - **Backward compatible** - Works with legacy service names and configurations

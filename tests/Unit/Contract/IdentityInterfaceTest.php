@@ -11,42 +11,42 @@ class IdentityInterfaceTest extends TestCase
 {
     public function testImplementationProvidesUsername(): void
     {
-        $identity = $this->createIdentity('testUser', 123, 'uuid-123', false, false);
-        $this->assertEquals('testUser', $identity->getUsername());
+        $identity = $this->createIdentity(username: 'new-username');
+        $this->assertEquals('new-username', $identity->getUsername());
     }
 
     public function testImplementationProvidesUserId(): void
     {
-        $identity = $this->createIdentity('testUser', 9102, 'uuid-123', false, false);
+        $identity = $this->createIdentity(userId: 9102);
         $this->assertSame(9102, $identity->getUserId());
     }
 
     public function testImplementationProvidesUuid(): void
     {
-        $identity = $this->createIdentity('testUser', 123, 'uuid-123', false, false);
-        $this->assertEquals('uuid-123', $identity->getUuid());
+        $identity = $this->createIdentity(uuid: 'test-uuid');
+        $this->assertEquals('test-uuid', $identity->getUuid());
     }
 
     public function testImplementationProvidesPasswordChangeRequired(): void
     {
-        $identity = $this->createIdentity('testUser', 123, 'uuid-123', true, false);
+        $identity = $this->createIdentity(passwordChangeRequired: true);
         $this->assertTrue($identity->isPasswordChangeRequired());
     }
 
     public function testImplementationProvidesAccountClaimRequired(): void
     {
-        $identity = $this->createIdentity('testUser', 123, 'uuid-123', false, true);
+        $identity = $this->createIdentity(accountClaimRequired: true);
         $this->assertTrue($identity->isAccountClaimRequired());
     }
 
     private function createIdentity(
-        string $username,
-        int $userId,
-        string $uuid,
-        bool $passwordChangeRequired,
-        bool $accountClaimRequired,
+        string $username = 'testUser',
+        int $userId = 123,
+        string $uuid = 'uuid-123',
+        bool $passwordChangeRequired = false,
+        bool $accountClaimRequired = false,
     ): IdentityInterface {
-        return new readonly class (
+        return new class (
             $username,
             $userId,
             $uuid,
@@ -54,11 +54,11 @@ class IdentityInterfaceTest extends TestCase
             $accountClaimRequired,
         ) implements IdentityInterface {
             public function __construct(
-                private string $username,
-                private int $userId,
-                private string $uuid,
-                private bool $passwordChangeRequired,
-                private bool $accountClaimRequired
+                private readonly string $username,
+                private readonly int $userId,
+                private readonly string $uuid,
+                private readonly bool $passwordChangeRequired,
+                private readonly bool $accountClaimRequired
             ) {
             }
 

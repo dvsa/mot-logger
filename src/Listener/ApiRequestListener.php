@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DvsaLogger\Listener;
 
+use DvsaLogger\Helper\ResolvePhpRequestTrait;
+use DvsaLogger\Helper\UuidGeneratorTrait;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\GenericHeader;
@@ -11,7 +13,9 @@ use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Stdlib\RequestInterface;
 use Random\RandomException;
+use Throwable;
 
 /**
  * Listens for Laminas MVC route events for API request logging.
@@ -19,6 +23,9 @@ use Random\RandomException;
  */
 class ApiRequestListener
 {
+    use ResolvePhpRequestTrait;
+    use UuidGeneratorTrait;
+
     private array $listeners = [];
 
     public function __construct(private readonly object $logger)
@@ -47,55 +54,81 @@ class ApiRequestListener
      */
     public function logRequest(MvcEvent $event): void
     {
-        $request = $event->getRequest();
-        if (!$request instanceof Request) {
+        $request = $this->resolvePhpEnvironmentRequest($event->getRequest());
+        if ($request === null) {
             return;
         }
 
-        $remoteAddress = new RemoteAddress();
+        $this->logger->debug('', $this->buildLogContext($request));
+    }
 
-        $token = '';
-        $authHeader = $request->getHeader('Authorization');
-        if ($authHeader instanceof Authorization) {
-            $token = $authHeader->getFieldValue();
-        }
-
-        $frontendRequestUuid = '';
-        $uuidHeader = $request->getHeader('X-request-uuid');
-        if ($uuidHeader instanceof GenericHeader) {
-            $frontendRequestUuid = $uuidHeader->getFieldValue();
-        }
-
-        $apiRequestUuid = '';
-        if (method_exists($this->logger, 'getRequestUuid')) {
-            try {
-                $apiRequestUuid = $this->logger->getRequestUuid();
-            } catch (\Throwable) {
-            }
-        }
-
-        if ($apiRequestUuid === '') {
-            $apiRequestUuid = bin2hex(random_bytes(16));
-        }
-
-        $userAgent = '';
-        $uaHeader = $request->getHeader('UserAgent');
-        if ($uaHeader instanceof UserAgent) {
-            $userAgent = $uaHeader->getFieldValue();
-        }
-
-        $this->logger->debug('', [
-            'api_request_uuid'       => $apiRequestUuid,
-            'uri'                    => $request->getUriString(),
-            'request_method'         => $request->getMethod(),
-            'parameters'             => [
+    /**
+     * @throws RandomException
+     */
+    private function buildLogContext(Request $request): array
+    {
+        return [
+            'api_request_uuid'      => $this->getApiRequestUuid(),
+            'uri'                   => $request->getUriString(),
+            'request_method'        => $request->getMethod(),
+            'parameters'            => [
                 'get_vars'  => $request->getQuery()->toArray(),
-                'post_vars'  => $request->getContent(),
+                'post_vars' => $request->getContent(),
             ],
-            'token'                  => $token,
-            'frontend_request_uuid'  => $frontendRequestUuid,
-            'ip_address'             => $remoteAddress->getIpAddress(),
-            'user_agent'             => $userAgent,
-        ]);
+            'token'                 => $this->getAuthToken($request),
+            'frontend_request_uuid' => $this->getFrontendRequestUuid($request),
+            'ip_address'            => $this->getIpAddress($request),
+            'user_agent'            => $this->getUserAgent($request),
+        ];
+    }
+
+    /**
+     * @throws RandomException
+     */
+    private function getApiRequestUuid(): string
+    {
+        if (!method_exists($this->logger, 'getRequestUuid')) {
+             $this->generateUuid();
+        }
+
+        try {
+            $uuid = $this->logger->getRequestUuid();
+            return $uuid !== '' ? $uuid : $this->generateUuid();
+        } catch (Throwable $exception) {
+            error_log(sprintf(
+                'Error retrieving API request UUID from logger: %s',
+                $exception->getMessage(),
+            ));
+            return $this->generateUuid();
+        }
+    }
+
+    private function getAuthToken(Request $request): string
+    {
+        $authHeader = $request->getHeader('Authorization');
+        return $authHeader instanceof Authorization
+            ? $authHeader->getFieldValue()
+            : '';
+    }
+
+    private function getFrontendRequestUuid(Request $request): string
+    {
+        $uuidHeader = $request->getHeader('X-request-uuid');
+        return $uuidHeader instanceof GenericHeader
+            ? $uuidHeader->getFieldValue()
+            : '';
+    }
+
+    private function getIpAddress(Request $request): string
+    {
+        return (new RemoteAddress())->getIpAddress();
+    }
+
+    private function getUserAgent(Request $request): string
+    {
+        $userAgent = $request->getHeader('User-Agent');
+        return $userAgent instanceof UserAgent
+            ? $userAgent->getFieldValue()
+            : '';
     }
 }

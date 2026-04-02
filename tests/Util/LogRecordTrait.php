@@ -1,13 +1,13 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    namespace DvsaLogger\Util;
+namespace DvsaLogger\Util;
 
-    use DateTimeImmutable;
-    use Monolog\Level;
-    use Monolog\LogRecord;
-    use Throwable;
+use DateTimeImmutable;
+use Monolog\Level;
+use Monolog\LogRecord;
+use Throwable;
 
 trait LogRecordTrait
 {

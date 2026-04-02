@@ -24,11 +24,8 @@ class TokenServiceInterfaceTest extends TestCase
     private function createTokenService(?string $token): TokenServiceInterface
     {
         return new class ($token) implements TokenServiceInterface {
-            private ?string $token;
-
-            public function __construct(?string $token)
+            public function __construct(private readonly ?string $token)
             {
-                $this->token = $token;
             }
 
             public function getToken(): null|string

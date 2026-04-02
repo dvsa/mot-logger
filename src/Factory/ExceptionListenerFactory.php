@@ -24,7 +24,11 @@ class ExceptionListenerFactory implements FactoryInterface
 
         try {
             $tokenService = $container->get(TokenServiceInterface::class);
-        } catch (ServiceNotFoundException) {
+        } catch (ServiceNotFoundException $exception) {
+            error_log(sprintf(
+                'TokenServiceInterface not found in container for ExceptionListener: %s',
+                $exception->getMessage(),
+            ));
         }
 
         return new ExceptionListener($logger, $tokenService);

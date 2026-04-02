@@ -12,6 +12,7 @@ use DvsaLogger\Formatter\PipeDelimitedFormatter;
 use DvsaLogger\Handler\DoctrineDbalHandler;
 use DvsaLogger\Helper\BuildReplaceMapTrait;
 use DvsaLogger\Helper\DatabaseConnectionResolver;
+use DvsaLogger\Helper\UuidGeneratorTrait;
 use DvsaLogger\Logger\MotLogger;
 use DvsaLogger\Processor\ReplaceTraceArgsProcessor;
 use DvsaLogger\Processor\SensitiveDataProcessor;
@@ -40,6 +41,7 @@ use Random\RandomException;
 readonly class MotLoggerFactory implements FactoryInterface
 {
     use BuildReplaceMapTrait;
+    use UuidGeneratorTrait;
 
     private DatabaseConnectionResolver $connectionResolver;
 
@@ -70,12 +72,20 @@ readonly class MotLoggerFactory implements FactoryInterface
 
         try {
             $identityProvider = $container->get(IdentityProviderInterface::class);
-        } catch (ServiceNotFoundException) {
+        } catch (ServiceNotFoundException $exception) {
+            error_log(sprintf(
+                'IdentityProvider implementation not found in container for MotLoggerFactory: %s',
+                $exception->getMessage(),
+            ));
         }
 
         try {
             $tokenService = $container->get(TokenServiceInterface::class);
-        } catch (ServiceNotFoundException) {
+        } catch (ServiceNotFoundException $exception) {
+            error_log(sprintf(
+                'TokenService implementation not found in container for MotLoggerFactory: %s',
+                $exception->getMessage(),
+            ));
         }
 
         $factory = new self($identityProvider, $tokenService, $container);
@@ -107,36 +117,40 @@ readonly class MotLoggerFactory implements FactoryInterface
      */
     public function create(array $config): MotLogger
     {
-        $channel = (string) ($config['channel'] ?? 'dvsa-mot');
-
-        $requestUuid = $this->resolveRequestUuid($config);
-
-        $includeToken = $this->resolveIncludeToken($config);
-
-        $replaceMap = $this->buildReplaceMap($config);
-
-        $processor = $this->buildProcessors($replaceMap);
-
         $handlers = $this->buildHandlers($config);
 
         if (empty($handlers)) {
             $handlers[] = new NoopHandler();
         }
 
-        $logger = new Logger($channel, array_values($handlers), $processor);
+        return new MotLogger(
+            $this->createMonologLogger(
+                $config,
+                $handlers,
+                $this->buildReplaceMap($config),
+            ),
+            $this->identityProvider,
+            $this->tokenService,
+            $this->resolveRequestUuid($config),
+            $this->resolveIncludeToken($config),
+        );
+    }
+
+    private function createMonologLogger(array $config, array $handlers, array $replaceMap): Logger
+    {
+        $logger = new Logger(
+            (string) ($config['channel'] ?? 'dvsa-mot'),
+            array_values($handlers),
+            $this->buildProcessors($replaceMap),
+        );
 
         if ($this->isErrorHandlerEnabled($config)) {
             ErrorHandler::register($logger);
         }
 
-        return new MotLogger(
-            $logger,
-            $this->identityProvider,
-            $this->tokenService,
-            $requestUuid,
-            $includeToken,
-        );
+        return $logger;
     }
+
 
     /**
      * Resolves the request UUID from config, generating one if not set.
@@ -151,16 +165,12 @@ readonly class MotLoggerFactory implements FactoryInterface
             return $uuid;
         }
 
-        return bin2hex(random_bytes(16));
+        return $this->generateUuid();
     }
 
     private function resolveIncludeToken(array $config): bool
     {
-        if (array_key_exists('include_token', $config)) {
-            return (bool) $config['include_token'];
-        }
-
-        return false;
+        return (bool) ($config['include_token'] ?? false);
     }
 
     /**
@@ -171,14 +181,12 @@ readonly class MotLoggerFactory implements FactoryInterface
      */
     private function buildProcessors(array $replaceMap): array
     {
-        $processors = [];
-
-        if (!empty($replaceMap)) {
-            $processors[] = new SensitiveDataProcessor($replaceMap);
-            $processors[] = new ReplaceTraceArgsProcessor($replaceMap);
-        }
-
-        return $processors;
+        return empty($replaceMap)
+            ? []
+            : [
+                new SensitiveDataProcessor($replaceMap),
+                new ReplaceTraceArgsProcessor($replaceMap),
+            ];
     }
 
     /**

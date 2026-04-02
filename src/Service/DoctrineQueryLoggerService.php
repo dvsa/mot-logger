@@ -31,7 +31,6 @@ class DoctrineQueryLoggerService
         $this->debugger = $debugger ?? new BacktraceDebugger();
     }
 
-
     public function startQuery(string $sql, ?array $params = null, ?array $types = null): void
     {
         $this->sql = $sql;

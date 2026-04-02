@@ -71,7 +71,7 @@ class FilteredStackTrace
     {
         $argumentNames = [];
 
-        if ($className !== null && class_exists($className)) {
+        if ($className !== null && class_exists($className) && method_exists($className, $function)) {
             $ref = new ReflectionMethod($className, $function);
         } elseif ($className === null && function_exists($function)) {
             $ref = new ReflectionFunction($function);
@@ -94,28 +94,11 @@ class FilteredStackTrace
         $argumentsCount = 0;
 
         foreach ($argumentValues as $argumentValue) {
-            if (is_string($argumentValue)) {
-                if ($canGetArgumentNames && isset($argumentNames[$argumentsCount])) {
-                    $value = $this->filterArgument($argumentNames[$argumentsCount], $argumentValue);
-                } else {
-                    $value = "'######'";
-                }
-            } elseif (is_array($argumentValue)) {
-                $value = 'Array';
-            } elseif (is_null($argumentValue)) {
-                $value = 'NULL';
-            } elseif (is_bool($argumentValue)) {
-                $value = $argumentValue ? 'true' : 'false';
-            } elseif (is_object($argumentValue)) {
-                $value = 'Object(' . get_class($argumentValue) . ')';
-            } else {
-                $value = $argumentValue;
-            }
+            $value = $this->getValueAsString($argumentValue, $argumentNames, $argumentsCount, $canGetArgumentNames);
 
             $argumentStrings[] = isset($argumentNames[$argumentsCount])
                 ? $argumentNames[$argumentsCount] . '=' . $value
                 : $value;
-
             $argumentsCount++;
         }
 
@@ -135,5 +118,23 @@ class FilteredStackTrace
             return "'******'";
         }
         return "'" . str_replace("'", "\\", $argumentValue) . "'";
+    }
+
+    private function getValueAsString(
+        mixed $argumentValue,
+        array $argumentNames,
+        int $argumentsCount,
+        bool $canGetArgumentNames,
+    ): string {
+        return match (true) {
+            is_string($argumentValue) => $canGetArgumentNames && isset($argumentNames[$argumentsCount])
+                ? $this->filterArgument($argumentNames[$argumentsCount], $argumentValue)
+                : "'######'",
+            is_array($argumentValue) => 'Array',
+            is_null($argumentValue) => 'NULL',
+            is_bool($argumentValue) => $argumentValue ? 'true' : 'false',
+            is_object($argumentValue) => 'Object(' . get_class($argumentValue) . ')',
+            default => (string) $argumentValue,
+        };
     }
 }

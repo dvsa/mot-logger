@@ -1,8 +1,8 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    namespace DvsaLogger\Util;
+namespace DvsaLogger\Util;
 
 use DvsaLogger\Logger\SystemLogger;
 use Monolog\Level;

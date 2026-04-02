@@ -49,7 +49,11 @@ class ApiClientRequestListener
         if (method_exists($this->logger, 'getRequestUuid')) {
             try {
                 $requestUuid = $this->logger->getRequestUuid();
-            } catch (Throwable) {
+            } catch (Throwable $exception) {
+                error_log(sprintf(
+                    'Error retrieving request UUID from logger: %s',
+                    $exception->getMessage(),
+                ));
             }
         }
 

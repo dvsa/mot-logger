@@ -35,7 +35,11 @@ class ExtrasProcessorFactory implements FactoryInterface
         try {
             $motConfig = $this->resolveMotConfig($container);
             $requestUuid = $motConfig['request_uuid'] ?? $motConfig['RequestUUID'] ?? null;
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            error_log(sprintf(
+                'Error resolving MOT config for ExtrasProcessorFactory: %s',
+                $exception->getMessage()
+            ));
         }
 
         /** @psalm-suppress DeprecatedClass */

@@ -1,12 +1,12 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 
-    namespace DvsaLogger\Util;
+namespace DvsaLogger\Util;
 
-    use Laminas\Http\PhpEnvironment\Request as PhpRequest;
-    use Laminas\Mvc\MvcEvent;
-    use Laminas\Stdlib\Parameters;
+use Laminas\Http\PhpEnvironment\Request as PhpRequest;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Stdlib\Parameters;
 
 trait MvcEventTrait
 {
@@ -24,7 +24,9 @@ trait MvcEventTrait
                 $request->setContent($options['content']);
             }
             foreach ($options['headers'] ?? [] as $name => $value) {
-                $request->getHeaders()->addHeaderLine($name, $value);
+                if (method_exists($request, 'getHeaders')) {
+                    $request->getHeaders()->addHeaderLine($name, $value);
+                }
             }
         }
 

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace DvsaLogger\Logger;
 
+use DateInvalidTimeZoneException;
+use DateTimeImmutable;
+use DateTimeZone;
 use DvsaLogger\Contract\IdentityProviderInterface;
 use DvsaLogger\Contract\TokenServiceInterface;
 use DvsaLogger\Helper\FilteredStackTrace;
+use DvsaLogger\Helper\UuidGeneratorTrait;
 use DvsaLogger\Processor\DvsaMetadataProcessor;
 use Monolog\Level;
 use Monolog\Logger;
 use Random\RandomException;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -18,6 +23,8 @@ use Throwable;
 */
 class MotLogger
 {
+    use UuidGeneratorTrait;
+
     public const ERROR_LOG_LEVEL = 'ERROR';
     public const INFO_LOG_LEVEL = 'INFO';
     public const WARN_LOG_LEVEL = 'WARN';
@@ -214,22 +221,27 @@ class MotLogger
         $this->logger->log($level, $message, $context);
     }
 
+    /**
+     * @throws DateInvalidTimeZoneException
+     */
     protected function getBasicMetadata(Level $priority): array
     {
         $levelName = $this->transformLogLevelForLogging($priority->name);
 
-        $username = '';
-        try {
-            $identity = $this->identityProvider?->getIdentity();
-            $username = $identity?->getUsername() ?? '';
-        } catch (Throwable) {
-        }
+        $identity = $this->identityProvider?->getIdentity();
+        $username = $identity?->getUsername() ?? '';
+        $microtime = microtime();
 
         $token = $this->token;
         if ($token === '') {
             try {
                 $token = $this->tokenService?->getToken() ?? '';
-            } catch (Throwable) {
+            } catch (Throwable $exception) {
+                error_log(sprintf(
+                    'Failed to find a valid token for logging level "%s": %s',
+                    $levelName,
+                    $exception->getMessage()
+                ));
             }
         }
 
@@ -239,8 +251,8 @@ class MotLogger
             'spanId' => $this->spanId,
             'parentSpanId' => $this->parentSpanId,
             'logEntryType' => $this->logEntryType,
-            'microtimeTimestamp' => $this->getMicrosecondsTimestamp(microtime()),
-            'timestamp' => $this->getTimestamp(microtime()),
+            'microtimeTimestamp' => $this->getMicrosecondsTimestamp($microtime),
+            'timestamp' => $this->getTimestamp($microtime),
             'callerName' => $this->getCallerName(),
             'logger_name' => $this->getCallerName(),
             'level' => $levelName,
@@ -295,18 +307,32 @@ class MotLogger
         return $traceEntry['function'] ?? 'unknown';
     }
 
-    protected function getMicrosecondsTimestamp(string $microtime): string
+    private function createDateTimeFromMicrotime(string $microtime): DateTimeImmutable
     {
         [$usec, $sec] = explode(' ', $microtime);
-        $milliseconds = substr($usec, 2, 6);
-        return date('Y-m-d H:i:s.', (int)$sec) . '.' . $milliseconds . ' Z';
+        $dateTime = DateTimeImmutable::createFromFormat(
+            'U.u',
+            sprintf('%d.%06d', (int)$sec, (int)substr($usec, 2, 6)),
+        );
+        if ($dateTime === false) {
+            throw new RuntimeException('Unable to parse microtime.');
+        }
+        return $dateTime;
+    }
+
+    protected function getMicrosecondsTimestamp(string $microtime): string
+    {
+        $dateTime = $this->createDateTimeFromMicrotime($microtime);
+        return $dateTime->format('Y-m-d H:i:s.u\Z');
     }
 
     protected function getTimestamp(string $microtime): string
     {
-        [$usec, $sec] = explode(' ', $microtime);
-        $milliseconds = substr($usec, 2, 3);
-        return date('Y-m-d\TH:i:s.' . $milliseconds . 'P', (int)$sec);
+        $dateTime = $this->createDateTimeFromMicrotime($microtime);
+        // Only 3 digits for milliseconds
+        return $dateTime->format('Y-m-d\TH:i:s.')
+            . substr($dateTime->format('u'), 0, 3)
+            . $dateTime->format('P');
     }
 
     /**
@@ -322,13 +348,5 @@ class MotLogger
             'alert', 'warning' => self::WARN_LOG_LEVEL,
             default => strtoupper($level),
         };
-    }
-
-    /**
-     * @throws RandomException
-     */
-    private function generateUuid(): string
-    {
-        return bin2hex(random_bytes(16));
     }
 }

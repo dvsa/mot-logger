@@ -98,13 +98,17 @@ class ExceptionListener
                 if (is_string($token) && $token !== '') {
                     $this->logger->setToken($token);
                 }
-            } catch (Throwable) {
+            } catch (Throwable $exception) {
+                error_log(sprintf(
+                    'Error retrieving token from TokenService: %s',
+                    $exception->getMessage(),
+                ));
             }
         }
     }
 
     protected function getEnv(string $name): string
     {
-        return (string) ($_ENV[$name] ?? getenv($name) ?: '');
+        return (string) ($_ENV[$name] ?? getenv($name)) ?: '';
     }
 }

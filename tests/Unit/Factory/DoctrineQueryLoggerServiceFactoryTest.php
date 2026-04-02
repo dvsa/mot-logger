@@ -25,12 +25,11 @@ class DoctrineQueryLoggerServiceFactoryTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->exactly(2))
             ->method('get')
-            ->willReturnCallback(function (string $name) use ($logger) {
-                if ($name === MotLogger::class) {
-                    return $logger;
-                }
-                return ['mot_logger' => []];
-            });
+            ->willReturnCallback(
+                fn(string $name): mixed => $name === MotLogger::class
+                    ? $logger
+                    : ['mot_logger' => []]
+            );
 
         $factory = new DoctrineQueryLoggerServiceFactory();
         $service = $factory($container, DoctrineQueryLoggerService::class);

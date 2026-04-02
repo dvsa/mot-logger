@@ -37,8 +37,7 @@ class JsonFormatter implements FormatterInterface
 
     public function format(LogRecord $record): string
     {
-        $data = $this->extractFields($record);
-        $json = json_encode($data);
+        $json = json_encode($this->extractFields($record));
 
         if ($json === false) {
             throw new RuntimeException(

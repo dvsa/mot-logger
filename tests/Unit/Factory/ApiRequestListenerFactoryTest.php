@@ -10,6 +10,7 @@ use DvsaLogger\Logger\MotLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use ReflectionObject;
 
 class ApiRequestListenerFactoryTest extends TestCase
 {
@@ -33,7 +34,7 @@ class ApiRequestListenerFactoryTest extends TestCase
 
     private function assertListenerHasLogger(ApiRequestListener $listener, $expectedLogger): void
     {
-        $reflection = new \ReflectionObject($listener);
+        $reflection = new ReflectionObject($listener);
         $property = $reflection->getProperty('logger');
         $property->setAccessible(true);
         $actualLogger = $property->getValue($listener);

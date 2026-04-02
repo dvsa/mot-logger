@@ -52,10 +52,14 @@ class DatabaseConnectionResolver
 
         // Fallback for legacy dbConfig
         $dbConfig = $config['dbConfig'] ?? null;
-        if (is_array($dbConfig) && !empty($dbConfig)) {
+        if (is_array($dbConfig)) {
             try {
                 return $this->createConnectionFromConfig($dbConfig);
-            } catch (Throwable) {
+            } catch (Throwable $exception) {
+                error_log(sprintf(
+                    'Failed to create DB connection from legacy dbConfig: %s',
+                    $exception->getMessage(),
+                ));
             }
         }
 
@@ -98,13 +102,13 @@ class DatabaseConnectionResolver
             return null;
         }
 
-            $columnMap = $listenerConfig['column_map'] ?? null;
+        $columnMap = $listenerConfig['column_map'] ?? null;
         if (is_array($columnMap)) {
             return $columnMap;
         }
 
-            // Legacy fallback
-            $options = $listenerConfig['options'] ?? null;
+        // Legacy fallback
+        $options = $listenerConfig['options'] ?? null;
         if (is_array($options)) {
             return $options['columnMap'] ?? $options['column_map'] ?? null;
         }
@@ -128,31 +132,14 @@ class DatabaseConnectionResolver
     protected function createConnectionFromConfig(array $dbConfig): Connection
     {
         $driver = (string) ($dbConfig['driver'] ?? 'pdo_mysql');
-        $dsn = $dbConfig['dsn'] ?? '';
+        $dnsParts = $this->parseDsn($dbConfig);
         $username = $dbConfig['username'] ?? '';
         $password = $dbConfig['password'] ?? '';
-        $dbname = '';
-        $host = 'localhost';
-        $port = 3306;
-
-        if ($dsn !== '') {
-            $parts = explode(';', $dsn);
-            foreach ($parts as $part) {
-                if (str_starts_with($part, 'dbname=')) {
-                    $dbname = substr($part, 7);
-                } elseif (str_starts_with($part, 'host=')) {
-                    $host = substr($part, 5);
-                } elseif (str_starts_with($part, 'port=')) {
-                    $port = (int) substr($part, 5);
-                }
-            }
-        }
-
         $params = [
             'driver' => $driver,
-            'host' => $host,
-            'port' => $port,
-            'dbname' => $dbname,
+            'host' => $dnsParts['host'],
+            'port' => $dnsParts['port'],
+            'dbname' => $dnsParts['dbname'],
             'user' => $username,
             'password' => $password,
         ];
@@ -166,5 +153,29 @@ class DatabaseConnectionResolver
 
         /** @psalm-suppress ArgumentTypeCoercion */
         return DriverManager::getConnection($params);
+    }
+
+    private function parseDsn(array $config): array
+    {
+        $dsn = $config['dsn'] ?? '';
+
+        $result = [
+            'dbname' => '',
+            'host' => 'localhost',
+            'port' => 3306,
+        ];
+
+        $parts = explode(';', $dsn);
+        foreach ($parts as $part) {
+            if (str_starts_with($part, 'dbname=')) {
+                $result['dbname'] = substr($part, 7);
+            } elseif (str_starts_with($part, 'host=')) {
+                $result['host'] = substr($part, 5);
+            } elseif (str_starts_with($part, 'port=')) {
+                $result['port'] = (int) substr($part, 5);
+            }
+        }
+
+        return $result;
     }
 }

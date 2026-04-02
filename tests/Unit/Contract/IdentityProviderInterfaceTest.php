@@ -26,11 +26,8 @@ class IdentityProviderInterfaceTest extends TestCase
     private function createProvider(?IdentityInterface $identity): IdentityProviderInterface
     {
         return new class ($identity) implements IdentityProviderInterface {
-            private ?IdentityInterface $identity;
-
-            public function __construct(?IdentityInterface $identity)
+            public function __construct(private ?IdentityInterface $identity)
             {
-                $this->identity = $identity;
             }
 
             public function getIdentity(): ?IdentityInterface

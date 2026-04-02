@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DvsaLogger\Listener;
 
+use DvsaLogger\Helper\ResolvePhpRequestTrait;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\ContentType;
@@ -18,6 +19,8 @@ use Throwable;
  */
 class ResponseListener
 {
+    use ResolvePhpRequestTrait;
+
     private array $listeners = [];
 
     public function __construct(private readonly object $logger)
@@ -48,8 +51,8 @@ class ResponseListener
 
     public function logResponse(MvcEvent $event): void
     {
-        $request = $event->getRequest();
-        if (!$request instanceof Request) {
+        $request = $this->resolvePhpEnvironmentRequest($event->getRequest());
+        if ($request === null) {
             return;
         }
 
@@ -58,46 +61,7 @@ class ResponseListener
             return;
         }
 
-        $headers = $response->getHeaders();
-
-        $contentType = '';
-        $ctHeader = $headers->get('Content-Type');
-        if ($ctHeader instanceof ContentType) {
-            $contentType = $ctHeader->getFieldValue();
-        }
-
-        $requestStartTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true);
-        $executionTime = microtime(true) - $requestStartTime;
-
-        $token = '';
-        $authHeader = $request->getHeader('Authorization');
-        if ($authHeader instanceof Authorization) {
-            $token = $authHeader->getFieldValue();
-        }
-
-        $frontendRequestUuid = '';
-        $uuidHeader = $request->getHeader('X-request-uuid');
-        if ($uuidHeader instanceof GenericHeader) {
-            $frontendRequestUuid = $uuidHeader->getFieldValue();
-        }
-
-        $requestUuid = '';
-        if (method_exists($this->logger, 'getRequestUuid')) {
-            try {
-                $requestUuid = $this->logger->getRequestUuid();
-            } catch (Throwable) {
-            }
-        }
-
-        $this->logger->debug('', [
-            'status_code'               => $response->getStatusCode(),
-            'content_type'              => $contentType,
-            'response_content'          => substr($response->getContent(), 0, 1000),
-            'execution_time'            => $executionTime,
-            'token'                     => $token,
-            'api_request_uuid'          => $requestUuid,
-            'frontend_request_uuid'     => $frontendRequestUuid,
-        ]);
+        $this->logger->debug('', $this->buildLogContext($request, $response));
     }
 
     public function shutdown(): void
@@ -105,5 +69,68 @@ class ResponseListener
         if (method_exists($this->logger, 'closeHandlers')) {
             $this->logger->closeHandlers();
         }
+    }
+
+    private function buildLogContext(Request $request, Response $response): array
+    {
+        return [
+            'status_code' => $response->getStatusCode(),
+            'content_type' => $this->getContentType($response),
+            'response_content' => substr($response->getContent(), 0, 1000),
+            'execution_time' => $this->getExecutionTime(),
+            'token' => $this->getAuthToken($request),
+            'api_request_uuid' => $this->getApiRequestUuid(),
+            'frontend_request_uuid' => $this->getFrontendRequestUuid($request),
+        ];
+    }
+
+    private function getContentType(Response $response): string
+    {
+        $headers = $response->getHeaders();
+        $ctHeader = $headers->get('Content-Type');
+        if ($ctHeader instanceof ContentType) {
+            return $ctHeader->getFieldValue();
+        }
+        return '';
+    }
+
+    private function getExecutionTime(): string
+    {
+        $requestStartTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true);
+        $executionTime = microtime(true) - $requestStartTime;
+        return (string) $executionTime;
+    }
+
+    private function getAuthToken(Request $request): string
+    {
+        $authHeader = $request->getHeader('Authorization');
+        if ($authHeader instanceof Authorization) {
+            return $authHeader->getFieldValue();
+        }
+        return '';
+    }
+
+    private function getApiRequestUuid(): string
+    {
+        if (method_exists($this->logger, 'getRequestUuid')) {
+            try {
+                return $this->logger->getRequestUuid();
+            } catch (Throwable $exception) {
+                error_log(sprintf(
+                    'Error retrieving API request UUID from logger: %s',
+                    $exception->getMessage(),
+                ));
+            }
+        }
+        return '';
+    }
+
+    private function getFrontendRequestUuid(Request $request): string
+    {
+        $uuidHeader = $request->getHeader('X-request-uuid');
+        if ($uuidHeader instanceof GenericHeader) {
+            return $uuidHeader->getFieldValue();
+        }
+        return '';
     }
 }

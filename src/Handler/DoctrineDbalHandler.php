@@ -61,24 +61,29 @@ class DoctrineDbalHandler extends AbstractProcessingHandler
         $lookup = array_merge($data, $extra);
 
         if ($this->columnMap !== null) {
-            $mapped = [];
-
-            foreach ($this->columnMap as $dbColumn => $sourceField) {
-                if (is_array($sourceField)) {
-                    $extraKey = array_key_first($sourceField);
-                    if ($extraKey === null) {
-                        $mapped[$dbColumn] = null;
-                    } else {
-                        $extraField = $sourceField[$extraKey];
-                        $mapped[$dbColumn] = $extra[$extraField][$extraField] ?? null;
-                    }
-                } else {
-                    $mapped[$dbColumn] = $lookup[$sourceField] ?? null;
-                }
-            }
-            return $mapped;
+            return $this->mapToColumns($this->columnMap, $extra, $lookup);
         }
 
         return $lookup;
+    }
+
+    private function mapToColumns(array $columnMap, array $extra, array $lookup): array
+    {
+        return array_map(
+            fn($sourceField): mixed => $this->resolveColumnValue($sourceField, $extra, $lookup),
+            $columnMap,
+        );
+    }
+
+    private function resolveColumnValue(string|array $sourceField, array $extra, array $lookup): mixed
+    {
+        if (is_string($sourceField)) {
+            return $lookup[$sourceField] ?? null;
+        }
+
+        $extraKey = array_key_first($extra) ?? "";
+        $fieldName = $sourceField[$extraKey] ?? "";
+
+        return $lookup[$extraKey][$fieldName] ?? null;
     }
 }
