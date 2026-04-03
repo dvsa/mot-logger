@@ -16,10 +16,6 @@
 
 class DatabaseConnectionResolverTest extends TestCase
 {
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testResolvesConnectionFromWriterConfig(): void
     {
         $connection = $this->createMock(Connection::class);
@@ -32,10 +28,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertSame($connection, $result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testResolvesConnectionFromServiceName(): void
     {
         $connection = $this->createMock(Connection::class);
@@ -49,10 +41,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertSame($connection, $result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testReturnsNullWhenServiceNotFound(): void
     {
         $container = $this->createContainer([]);
@@ -65,10 +53,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertNull($result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testReturnsNullWhenNoConnectionAndNoDbConfig(): void
     {
         $resolver = new DatabaseConnectionResolver();
@@ -159,10 +143,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertNull($result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testResolvesConnectionFromServiceNameWithServiceNotFoundException(): void
     {
         $container = new class implements ContainerInterface {
@@ -180,9 +160,6 @@ class DatabaseConnectionResolverTest extends TestCase
             $this->assertNull($result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     */
     public function testResolvesConnectionFromServiceNameWithOtherException(): void
     {
         $container = new class implements ContainerInterface {
@@ -196,15 +173,12 @@ class DatabaseConnectionResolverTest extends TestCase
                 return false;
             }
         };
-            $resolver = new DatabaseConnectionResolver($container);
-            $this->expectException(NotFoundExceptionInterface::class);
-            $resolver->resolveConnection(['connection' => 'missing'], []);
+
+        $resolver = new DatabaseConnectionResolver($container);
+        $result = $resolver->resolveConnection(['connection' => 'missing'], []);
+        $this->assertNull($result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testResolvesConnectionFromLegacyDbConfigThrows(): void
     {
         $resolver = new DatabaseConnectionResolver();
@@ -217,10 +191,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertInstanceOf(Connection::class, $result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testCreateConnectionFromConfigWithExtraParams(): void
     {
         $resolver = new DatabaseConnectionResolver();
@@ -235,10 +205,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertInstanceOf(Connection::class, $result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testCreateConnectionFromConfigParsesDsn(): void
     {
         $resolver = new DatabaseConnectionResolver();
@@ -288,10 +254,6 @@ class DatabaseConnectionResolverTest extends TestCase
         $this->assertSame(['baz' => 'qux'], $result);
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
     public function testReturnsNullWhenCreateConnectionFromConfigThrows(): void
     {
         $resolver = new class extends DatabaseConnectionResolver {

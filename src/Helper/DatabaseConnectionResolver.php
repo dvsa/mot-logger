@@ -8,7 +8,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
@@ -30,8 +29,6 @@ class DatabaseConnectionResolver
      *
      * @param array<string, mixed> $writer Writer config array
      * @param array<string, mixed> $config Full DvsaLogger config array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     public function resolveConnection(array $writer, array $config): ?Connection
     {
@@ -45,7 +42,17 @@ class DatabaseConnectionResolver
             if (is_string($connectionRef) && $this->container !== null) {
                 try {
                     return $this->container->get($connectionRef);
-                } catch (ServiceNotFoundException) {
+                } catch (ServiceNotFoundException | NotFoundExceptionInterface) {
+                    error_log(sprintf(
+                        'DB connection service "%s" not found in container.',
+                        $connectionRef,
+                    ));
+                } catch (Throwable $exception) {
+                    error_log(sprintf(
+                        'Failed to retrieve DB connection service "%s": %s',
+                        $connectionRef,
+                        $exception->getMessage(),
+                    ));
                 }
             }
         }
