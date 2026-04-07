@@ -29,7 +29,7 @@ class ResponseListener
 
     public function attach(EventManagerInterface $events, int $priority = 1): void
     {
-        $events->attach(
+        $this->listeners[] = $events->attach(
             MvcEvent::EVENT_FINISH,
             [$this, 'logResponse'],
             $priority

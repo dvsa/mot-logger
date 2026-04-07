@@ -36,8 +36,11 @@ class ApiClientRequestListener
 
     public function detach(EventManager $events): void
     {
-        foreach ($this->listeners as $listener) {
-            $events->detach($listener);
+        $sharedManager = $events->getSharedManager();
+        if ($sharedManager !== null) {
+            foreach ($this->listeners as $listener) {
+                $sharedManager->detach($listener);
+            }
         }
         $this->listeners = [];
     }

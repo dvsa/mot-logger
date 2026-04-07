@@ -47,7 +47,7 @@ class Module
         $responseListener = $serviceManager->get(Listener\ResponseListener::class);
         $responseListener->attach($eventManager);
 
-        if (!$sapiHelper->requestIsConsole) {
+        if (!$sapiHelper->requestIsConsole()) {
             $apiRequestListener = $serviceManager->get(Listener\ApiRequestListener::class);
             $apiRequestListener->attach($eventManager);
 

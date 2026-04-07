@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DvsaLogger\Formatter;
 
 use Monolog\Formatter\FormatterInterface;
-use Monolog\Formatter\JsonFormatter as BaseJsonFormatter;
 use Monolog\LogRecord;
 use RuntimeException;
 

@@ -20,7 +20,7 @@ class ApiRequestListenerFactoryTest extends TestCase
     public function testCreate(): void
     {
         $logger = $this->createMock(MotLogger::class);
-        $container = $this->createMock(Containerinterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
             ->method('get')
             ->with(MotLogger::class)

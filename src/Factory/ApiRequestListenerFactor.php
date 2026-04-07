@@ -11,7 +11,7 @@
 
 class ApiRequestListenerFactor implements FactoryInterface
 {
-    public function __invoke(Containerinterface $container, $requestedName, ?array $options = null): ApiRequestListener
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ApiRequestListener
     {
         $logger = $container->get(MotLogger::class);
         return new ApiRequestListener($logger);

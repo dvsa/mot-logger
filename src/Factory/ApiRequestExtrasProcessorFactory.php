@@ -27,7 +27,7 @@ class ApiRequestExtrasProcessorFactory implements FactoryInterface
      * @psalm-suppress DeprecatedClass
      */
     public function __invoke(
-        Containerinterface $container,
+        ContainerInterface $container,
         $requestedName,
         ?array $options = null,
     ): ApiRequestExtrasProcessor {

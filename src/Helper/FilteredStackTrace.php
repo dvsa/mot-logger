@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DvsaLogger\Helper;
 
 use Exception;
-use ReflectionException;
 use ReflectionFunction;
 use ReflectionMethod;
 use Throwable;
@@ -64,9 +63,6 @@ class FilteredStackTrace
         );
     }
 
-    /**
-     * @throws ReflectionException
-     */
     protected function getArgumentNames(string $function, ?string $className): array
     {
         $argumentNames = [];
@@ -117,7 +113,7 @@ class FilteredStackTrace
         if (preg_match(self::TRACE_EXCLUSIONS, $argumentName)) {
             return "'******'";
         }
-        return "'" . str_replace("'", "\\", $argumentValue) . "'";
+        return "'" . str_replace("'", "\\'", $argumentValue) . "'";
     }
 
     private function getValueAsString(

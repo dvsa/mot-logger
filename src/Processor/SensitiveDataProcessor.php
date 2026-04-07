@@ -32,13 +32,17 @@ class SensitiveDataProcessor
 
         $extra = $record->extra;
         if (isset($extra['trace']) && is_array($extra['trace']) && !empty($extra['trace'])) {
-            $this->processTraceArray($extra['trace']);
+            $trace = $extra['trace'];
+            $this->processTraceArray($trace);
+            $extra['trace'] = $trace;
             return $record->with(extra: $extra);
         }
 
         $context = $record->context;
         if (isset($context['trace']) && is_array($context['trace']) && !empty($context['trace'])) {
-            $this->processTraceArray($context['trace']);
+            $trace = $context['trace'];
+            $this->processTraceArray($trace);
+            $context['trace'] = $trace;
             return $record->with(context: $context);
         }
 

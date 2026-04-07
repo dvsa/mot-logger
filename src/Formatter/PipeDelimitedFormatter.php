@@ -75,7 +75,11 @@ class PipeDelimitedFormatter implements FormatterInterface
         $fields[] = !empty($userExtras) ? json_encode($userExtras) : '';
 
         if ($this->includeExceptionFields) {
-            $fields[] = (string) ($metadata['stackTrace'] ?? '');
+            $stacktrace = $metadata['stacktrace'] ?? '';
+            if (is_array($stacktrace)) {
+                $stacktrace = json_encode($stacktrace);
+            }
+            $fields[] = (string) $stacktrace;
         }
 
         return $fields;

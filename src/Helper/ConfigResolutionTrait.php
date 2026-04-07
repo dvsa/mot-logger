@@ -11,12 +11,12 @@ use Psr\Container\NotFoundExceptionInterface;
 trait ConfigResolutionTrait
 {
     /**
-     * @param Containerinterface $container
-     * @return array<string, mixed>
+     * @param ContainerInterface $container
+     * @return array
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    private function resolveMotConfig(Containerinterface $container): array
+    private function resolveMotConfig(ContainerInterface $container): array
     {
         $config = $container->get('Config');
         return $config['mot_logger']

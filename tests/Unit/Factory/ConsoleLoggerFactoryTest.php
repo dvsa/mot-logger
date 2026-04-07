@@ -27,7 +27,7 @@ class ConsoleLoggerFactoryTest extends TestCase
         $motLogger = $this->createMock(MotLogger::class);
         $motLogger->method('getLogger')->willReturn($monolog);
 
-        $container = $this->createMock(Containerinterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
             ->method('get')
             ->with(MotLogger::class)
@@ -49,7 +49,7 @@ class ConsoleLoggerFactoryTest extends TestCase
         $monolog = $this->createMock(Logger::class);
         $consoleLogger = new ConsoleLogger($monolog);
 
-        $container = $this->createMock(Containerinterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->once())
             ->method('get')
             ->with(MotLogger::class)

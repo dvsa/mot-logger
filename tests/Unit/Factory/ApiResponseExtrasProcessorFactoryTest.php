@@ -18,7 +18,7 @@ class ApiResponseExtrasProcessorFactoryTest extends TestCase
 
     public function testCreateWithNewConfig(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
             'mot_logger' => [
                 'request_uuid' => 'test-uuid',
@@ -33,7 +33,7 @@ class ApiResponseExtrasProcessorFactoryTest extends TestCase
 
     public function testCreateWithLegacyConfig(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
             'DvsaApplicationLogger' => [
                 'RequestUUID' => 'legacy-uuid',
@@ -48,7 +48,7 @@ class ApiResponseExtrasProcessorFactoryTest extends TestCase
 
     public function testCreateWithNoUuid(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
             'mot_logger' => [],
         ]);

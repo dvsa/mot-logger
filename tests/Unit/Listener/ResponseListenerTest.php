@@ -111,7 +111,7 @@ class ResponseListenerTest extends TestCase
         };
         $events = $this->createMock(EventManagerInterface::class);
         $events->method('attach')->willReturn($attachedListener);
-        $events->expects($this->exactly(1))
+        $events->expects($this->exactly(2))
             ->method('detach');
 
         $listener->attach($events);

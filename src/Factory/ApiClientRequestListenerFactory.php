@@ -12,7 +12,7 @@ use Psr\Container\ContainerInterface;
 class ApiClientRequestListenerFactory implements FactoryInterface
 {
     public function __invoke(
-        Containerinterface $container,
+        ContainerInterface $container,
         $requestedName,
         ?array $options = null,
     ): ApiClientRequestListener {

@@ -20,7 +20,7 @@ class ConsoleLoggerFactory implements FactoryInterface
      * @throws RandomException
      */
     public function __invoke(
-        Containerinterface $container,
+        ContainerInterface $container,
         $requestedName,
         ?array $options = null,
     ): ConsoleLogger {

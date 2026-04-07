@@ -97,13 +97,10 @@ class ApiClientRequestListenerTest extends TestCase
         $attachedListener = function (): void {
         };
         $sharedManager->method('attach')->willReturn($attachedListener);
-        $sharedManager->method('detach')->with($attachedListener);
-
-        $events->method('getSharedManager')->willReturn($sharedManager);
-        $events->method('getSharedManager')->willReturn($sharedManager);
-        $events->expects($this->once())
+        $sharedManager->expects($this->once())
             ->method('detach')
             ->with($attachedListener);
+        $events->method('getSharedManager')->willReturn($sharedManager);
 
         $listener->attach($events);
         $listener->detach($events);

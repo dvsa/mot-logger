@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace DvsaLoggerTest\Unit\Factory;
 
-use DateTimeImmutable;
 use DvsaLogger\Factory\DoctrineQueryExtrasProcessorFactory;
 use DvsaLogger\Processor\DoctrineQueryExtrasProcessor;
 use DvsaLogger\Util\LogRecordTrait;
 use Monolog\Level;
-use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -25,7 +23,7 @@ class DoctrineQueryExtrasProcessorFactoryTest extends TestCase
 
     public function testCreateWithNewConfig(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
             'mot_logger' => [
                 'request_uuid' => 'test-uuid-123',
@@ -44,7 +42,7 @@ class DoctrineQueryExtrasProcessorFactoryTest extends TestCase
      */
     public function testCreateWithLegacyConfig(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
         'DvsaApplicationLogger' => [
             'RequestUUID' => 'legacy-uuid-456',
@@ -62,7 +60,7 @@ class DoctrineQueryExtrasProcessorFactoryTest extends TestCase
      */
     public function testCreateWithNoUuid(): void
     {
-        $container = $this->createStub(Containerinterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')->with('Config')->willReturn([
         'mot_logger' => [],
         ]);

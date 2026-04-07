@@ -13,7 +13,6 @@ use Laminas\Http\Header\UserAgent;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Stdlib\RequestInterface;
 use Random\RandomException;
 use Throwable;
 
@@ -88,7 +87,7 @@ class ApiRequestListener
     private function getApiRequestUuid(): string
     {
         if (!method_exists($this->logger, 'getRequestUuid')) {
-             $this->generateUuid();
+             return $this->generateUuid();
         }
 
         try {
