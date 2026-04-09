@@ -1,62 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DvsaLogger;
 
+use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
-/**
- * Class Module
- *
- * @package DvsaLogger
- */
 class Module
 {
-    /**
-     * @param MvcEvent $e
-     */
-    public function onBootstrap(MvcEvent $e)
-    {
-        $eventManager = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-
-        $config = $e->getApplication()->getServiceManager()->get('config');
-        $serviceManager = $e->getApplication()->getServiceManager();
-        foreach ($config['DvsaLogger']['listeners'] as $listenerConfig) {
-            if ($listenerConfig['enabled'] === true) {
-                $logger = $serviceManager->get($listenerConfig['loggerFactory']);
-                $class = $listenerConfig['listenerClass'];
-                $listener = new $class();
-                $listener->setLogger($logger);
-                $eventManager->attach($listener);
-            }
-        }
-        return;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/config/module.config.php';
     }
 
     /**
-     * @return array
+     * @param MvcEvent $event
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function getAutoloaderConfig()
+    public function onBootstrap(MvcEvent $event): void
     {
-        return [
-            \Laminas\Loader\ClassMapAutoloader::class => [
-                __DIR__ . '/autoload_classmap.php',
-            ],
-            \Laminas\Loader\StandardAutoloader::class => [
-                'namespaces' => [
-                    'DvsaLogger' => __DIR__ . '/src/DvsaLogger',
-                ],
-            ],
-        ];
+        if (!class_exists(MvcEvent::class)) {
+            return;
+        }
+
+        $application = $event->getApplication();
+        $eventManager = $application->getEventManager();
+        $serviceManager = $application->getServiceManager();
+
+        $moduleRouteListener = new ModuleRouteListener();
+        $moduleRouteListener->attach($eventManager);
+
+        if (!interface_exists(EventManagerInterface::class)) {
+            return;
+        }
+
+        $sapiHelper = $serviceManager->get(Helper\SapiHelper::class);
+
+        $requestListener = $serviceManager->get(Listener\RequestListener::class);
+        $requestListener->attach($eventManager);
+
+        $responseListener = $serviceManager->get(Listener\ResponseListener::class);
+        $responseListener->attach($eventManager);
+
+        if (!$sapiHelper->requestIsConsole()) {
+            $apiRequestListener = $serviceManager->get(Listener\ApiRequestListener::class);
+            $apiRequestListener->attach($eventManager);
+
+            $apiClientRequestListener = $serviceManager->get(Listener\ApiClientRequestListener::class);
+            $apiClientRequestListener->attach($eventManager);
+
+            $exceptionListener = $serviceManager->get(Listener\ExceptionListener::class);
+            $exceptionListener->attach($eventManager);
+        }
     }
 }

@@ -1,13 +1,28 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="vendor/autoload.php" colors="true" stopOnFailure="false">
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        stopOnFailure="false"
+        beStrictAboutTestsThatDoNotTestAnything="true"
+        beStrictAboutOutputDuringTests="true"
+>
   <testsuites>
-    <testsuite name="Dvsa Logger Test Suite">
-      <directory>tests/</directory>
+    <testsuite name="DVSA MOT Logger Test Suite">
+      <directory>tests/Unit</directory>
+      <exclude>tests/Stubs</exclude>
+      <exclude>tests/Util</exclude>
     </testsuite>
   </testsuites>
+
   <coverage>
     <include>
-      <directory suffix=".php">src</directory>
+      <directory suffix=".php">src/</directory>
     </include>
+    <report>
+      <html outputDirectory="./coverage" lowUpperBound="35" highLowerBound="70"/>
+      <text outputFile="php://stdout" showOnlySummary="true"/>
+      <clover outputFile="build/logs/clover.xml"/>
+    </report>
   </coverage>
 </phpunit>

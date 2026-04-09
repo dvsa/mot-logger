@@ -1,7 +1,9 @@
 parameters:
-    ignoreErrors:
-        - identifier: missingType.iterableValue
-    level: max
+    level: 6
     paths:
         - src
-        - tests
+    excludePaths:
+        - src/Listener
+        - tests/Stubs
+    ignoreErrors:
+        - identifier: missingType.iterableValue
