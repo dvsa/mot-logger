@@ -14,6 +14,7 @@ use Throwable;
 class ApiClientRequestListener
 {
     private object $logger;
+    /** @var array<callable> */
     private array $listeners = [];
 
     public function __construct(object $logger)
@@ -25,12 +26,13 @@ class ApiClientRequestListener
     {
         $sharedManager = $events->getSharedManager();
         if ($sharedManager !== null) {
-            /** @psalm-suppress UndefinedFunction */
-            $this->listeners[] = $sharedManager->attach(
+            $callable = [$this, 'logStartOfRequest'];
+            $sharedManager->attach(
                 'DvsaCommon\\HttpRestJson\\Client',
                 'startOfRequest',
-                [$this, 'logStartOfRequest']
+                $callable
             );
+            $this->listeners[] = $callable;
         }
     }
 
@@ -46,6 +48,9 @@ class ApiClientRequestListener
     }
 
 
+    /**
+     * @param Event<object, array<string, mixed>> $event
+     */
     public function logStartOfRequest(Event $event): void
     {
         $requestUuid = '';

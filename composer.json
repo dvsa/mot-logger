@@ -20,6 +20,7 @@
         "laminas/laminas-modulemanager": "^2.16"
     },
     "require-dev": {
+        "amphp/amp": "^2.6.5",
         "captainhook/captainhook": "^5.16",
         "captainhook/plugin-composer": "^5.3",
         "dvsa/coding-standards": "^2.0",

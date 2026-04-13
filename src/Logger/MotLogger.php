@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace DvsaLogger\Logger;
 
-use DateInvalidTimeZoneException;
 use DateTimeImmutable;
-use DateTimeZone;
 use DvsaLogger\Contract\IdentityProviderInterface;
 use DvsaLogger\Contract\TokenServiceInterface;
 use DvsaLogger\Helper\FilteredStackTrace;
@@ -221,9 +219,6 @@ class MotLogger
         $this->logger->log($level, $message, $context);
     }
 
-    /**
-     * @throws DateInvalidTimeZoneException
-     */
     protected function getBasicMetadata(Level $priority): array
     {
         $levelName = $this->transformLogLevelForLogging($priority->name);
@@ -289,7 +284,7 @@ class MotLogger
             if (isset($trace[$i]['class']) && str_starts_with($trace[$i]['class'], 'DvsaLogger\\Logger\\')) {
                 continue;
             }
-            return $this->formatTraceCaller($trace[$i] ?? []);
+            return $this->formatTraceCaller($trace[$i]);
         }
 
         return 'unknown';

@@ -68,8 +68,8 @@ class ConfigResolutionTraitTest extends TestCase
 
     private function createContainer(array $config): ContainerInterface
     {
-        return new readonly class ($config) implements ContainerInterface {
-            public function __construct(private array $config)
+        return new class ($config) implements ContainerInterface {
+            public function __construct(private readonly array $config)
             {
             }
 

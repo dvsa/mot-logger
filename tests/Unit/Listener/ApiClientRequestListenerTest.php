@@ -80,8 +80,7 @@ class ApiClientRequestListenerTest extends TestCase
         $sharedManager = $this->createMock(SharedEventManagerInterface::class);
         $sharedManager->expects($this->once())
             ->method('attach')
-            ->with('DvsaCommon\HttpRestJson\Client', 'startOfRequest')
-            ->willReturn($sharedManager);
+            ->with('DvsaCommon\HttpRestJson\Client', 'startOfRequest', [$listener, 'logStartOfRequest']);
         $events->method('getSharedManager')->willReturn($sharedManager);
 
         $listener->attach($events);
@@ -94,12 +93,12 @@ class ApiClientRequestListenerTest extends TestCase
 
         $events = $this->createMock(EventManager::class);
         $sharedManager = $this->createMock(SharedEventManagerInterface::class);
-        $attachedListener = function (): void {
-        };
-        $sharedManager->method('attach')->willReturn($attachedListener);
+        $sharedManager->method('attach')->willReturn(null);
+
         $sharedManager->expects($this->once())
             ->method('detach')
-            ->with($attachedListener);
+            ->with([$listener, 'logStartOfRequest']);
+
         $events->method('getSharedManager')->willReturn($sharedManager);
 
         $listener->attach($events);
