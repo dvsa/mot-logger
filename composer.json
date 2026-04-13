@@ -48,7 +48,7 @@
         "phpcs": "./vendor/bin/phpcs .",
         "phpcs:fix": "./vendor/bin/phpcbf .",
         "phpstan": "./vendor/bin/phpstan",
-        "psalm": "./vendor/bin/psalm",
+        "psalm": "COMPOSER_HOME=/dev/null COMPOSER_CACHE_DIR=/tmp/composer-cache ./vendor/bin/psalm --no-cache",
         "test": "vendor/bin/phpunit -c phpunit.xml",
         "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit -c phpunit.xml --coverage-html coverage"
     },
