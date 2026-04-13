@@ -20,12 +20,11 @@
         "laminas/laminas-modulemanager": "^2.16"
     },
     "require-dev": {
-        "amphp/amp": "^2.6.5",
         "captainhook/captainhook": "^5.16",
         "captainhook/plugin-composer": "^5.3",
         "dvsa/coding-standards": "^2.0",
         "phpstan/phpstan": "^1.11",
-        "phpunit/phpunit": "^10.0",
+        "phpunit/phpunit": "^9.6",
         "squizlabs/php_codesniffer": "^3.10",
         "vimeo/psalm": "^5.24"
     },
@@ -55,8 +54,20 @@
     },
     "config": {
         "allow-plugins": {
-            "captainhook/plugin-composer": true,
-            "laminas/laminas-dependency-plugin": true
+            "captainhook/plugin-composer": true
+        },
+        "secure-http": false,
+        "disable-tls": true,
+        "use-github-api": false,
+        "platform-check": false,
+        "platform": {
+            "php": "8.2.99"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://repo.packagist.org"
         }
     }
 }

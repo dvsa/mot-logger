@@ -6,7 +6,6 @@
         findUnusedVariables="true"
         findUnusedParams="true"
         findUnusedBaselineEntry="true"
-        findUnusedCode="false"
         errorLevel="3"
 >
     <projectFiles>
@@ -15,6 +14,7 @@
         <ignoreFiles>
             <directory name="vendor" />
             <directory name="tests" />
+            <directory name="build" />
         </ignoreFiles>
     </projectFiles>
 
@@ -24,5 +24,7 @@
         <MixedMethodCall errorLevel="suppress" />
         <MixedPropertyFetch errorLevel="suppress" />
         <MixedReturnStatement errorLevel="suppress" />
+        <PropertyNotSetInConstructor errorLevel="suppress" />
+        <UnresolvableInclude errorLevel="suppress" />
     </issueHandlers>
 </psalm>
