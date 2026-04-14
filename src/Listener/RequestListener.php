@@ -28,6 +28,7 @@ class RequestListener
     use ResolvePhpRequestTrait;
     use UuidGeneratorTrait;
 
+    /** @var array<callable> */
     private array $listeners = [];
 
     public function __construct(private readonly object $logger)

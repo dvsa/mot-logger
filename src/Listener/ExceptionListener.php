@@ -18,8 +18,12 @@ use Throwable;
  */
 class ExceptionListener
 {
+    /** @var array<callable> */
     private array $listeners = [];
 
+    /**
+     * @param object $logger Logger instance (typically MotLogger)
+     */
     public function __construct(
         private readonly object $logger,
         private readonly ?TokenServiceInterface $tokenService = null
@@ -83,11 +87,13 @@ class ExceptionListener
 
             $spanId = $this->getEnv('SPAN_ID');
             if ($spanId !== '') {
+                assert(method_exists($this->logger, 'setSpanId'));
                 $this->logger->setSpanId($spanId);
             }
 
             $parentSpanId = $this->getEnv('PARENT_SPAN_ID');
             if ($parentSpanId !== '') {
+                assert(method_exists($this->logger, 'setParentSpanId'));
                 $this->logger->setParentSpanId($parentSpanId);
             }
         }

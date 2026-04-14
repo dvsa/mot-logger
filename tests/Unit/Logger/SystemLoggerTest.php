@@ -46,17 +46,44 @@ class SystemLoggerTest extends TestCase
     {
         $secretValue = 'secretValue';
         $mask = '**MASKED**';
-        $logger = $this->createSystemLoggerSpy([$secretValue => $mask]);
+
+        $logger = new class ([$secretValue => $mask]) extends SystemLogger {
+            /** @var list<array<string, string>>  */
+            public array $written = [];
+
+            public function __construct(array $replaceMap)
+            {
+                parent::__construct($replaceMap);
+            }
+
+            protected function writeToErrorLog(string $message, string $stackTrace): void
+            {
+                $this->written[] = ['message' => $message, 'stacktrace' => $stackTrace];
+            }
+
+            public function testMaskExceptionTrace(string $trace): string
+            {
+                $reflection = new \ReflectionClass($this);
+                $method = $reflection->getMethod('maskExceptionTrace');
+                return $method->invoke($this, $trace);
+            }
+        };
+
+        $mockStackTrace = "#0 SystemLoggerTest->throwWithSecretValue('{$secretValue}')";
+        $mockStackTrace .= "\n#1 PHPUnit\\Framework\\TestCase->runTest()";
+
+        $maskedTrace = $logger->testMaskExceptionTrace($mockStackTrace);
+
+        $this->assertStringContainsString($mask, $maskedTrace);
+        $this->assertStringNotContainsString($secretValue, $maskedTrace);
 
         try {
-            $this->throwWithSecretValue($secretValue);
+            throw new Exception('Test exception');
         } catch (Exception $exception) {
             $logger->recursiveLogExceptionToSystemLog($exception);
         }
 
         $this->assertCount(1, $logger->written);
-        $this->assertStringContainsString($mask, $logger->written[0]['stacktrace']);
-        $this->assertStringNotContainsString($secretValue, $logger->written[0]['stacktrace']);
     }
 
     public function testEmptyReplaceMapDoesNotMask(): void

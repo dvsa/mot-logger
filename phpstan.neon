@@ -3,7 +3,6 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/Listener
         - tests/Stubs
     ignoreErrors:
         - identifier: missingType.iterableValue

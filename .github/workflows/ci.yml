@@ -16,20 +16,117 @@ concurrency:
 
 jobs:
   static:
-    uses: dvsa/.github/.github/workflows/php-static.yml@v5.0.10
-    with:
-      php-version: '8.2'
-      composer-version: 'v2.2.24'
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: json, mbstring, curl
+          coverage: none
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-8.2-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.2-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHP_CodeSniffer
+        run: composer phpcs
+
+      - name: Run PHPStan
+        run: composer phpstan
+
+      - name: Run Psalm
+        run: composer psalm
 
   test:
-    uses: dvsa/.github/.github/workflows/php-tests.yml@v5.0.10
-    with:
-      php-versions: "[\"8.2\"]"
-      composer-version: 'v2.2.24'
+    name: Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, mbstring, curl
+          coverage: xdebug
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHPUnit tests
+        run: composer test
+
+      - name: Run PHPUnit tests with coverage
+        run: composer test:coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./build/logs/clover.xml
+          fail_ci_if_error: false
 
   security:
-    uses: dvsa/.github/.github/workflows/php-security.yml@v5.0.10
-    with:
-      php-version: '8.2'
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: json, mbstring, curl
+          coverage: none
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-8.2-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.2-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run Composer audit for vulnerabilities
+        run: composer audit
+
+      - name: Security check with local-php-security-checker
+        uses: symfonycorp/security-checker-action@v5
+
+      - name: Run Snyk to check for vulnerabilities
+        if: env.SNYK_TOKEN != ''
+        uses: snyk/actions/php@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test

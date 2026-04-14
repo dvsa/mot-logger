@@ -255,10 +255,10 @@ class DoctrineDbalHandlerTest extends TestCase
 
     public function testExceptionIsPropagated(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\RuntimeException::class);
         $connection = $this->createMock(Connection::class);
         $connection->method('insert')
-            ->willThrowException(new Exception('fail'));
+            ->willThrowException(new \RuntimeException('Database operation failed'));
 
         $handler = new DoctrineDbalHandler(
             $connection,
