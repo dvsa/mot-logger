@@ -56,18 +56,9 @@
         "allow-plugins": {
             "captainhook/plugin-composer": true
         },
-        "secure-http": false,
-        "disable-tls": true,
-        "use-github-api": false,
         "platform-check": false,
         "platform": {
             "php": "8.2.99"
-        }
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://repo.packagist.org"
         }
     }
 }
