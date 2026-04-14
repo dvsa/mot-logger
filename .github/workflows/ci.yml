@@ -77,7 +77,7 @@ jobs:
         run: composer test
 
   security:
-    uses: dvsa/.github/.github/workflows/php-security.yml@v4.1.0
+    uses: dvsa/.github/.github/workflows/php-security.yml@v5.0.10
     with:
       php-version: '8.2'
     secrets:
