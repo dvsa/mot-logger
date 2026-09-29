@@ -74,7 +74,7 @@ class DoctrineQueryLoggerServiceFactoryTest extends TestCase
                 if ($name === MotLogger::class) {
                     return $logger;
                 }
-                return ['DvsaLogger' => ['loggers' => ['doctrine_query' => ['enabled' => true]]]];
+                return ['DvsaLogger' => ['doctrine_query' => ['enabled' => true]]];
             });
 
         $factory = new DoctrineQueryLoggerServiceFactory();

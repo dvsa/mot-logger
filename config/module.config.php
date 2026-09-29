@@ -1,37 +1,39 @@
 <?php
 
-    use DvsaLogger\Contract\IdentityInterface;
-    use DvsaLogger\Contract\IdentityProviderInterface;
-    use DvsaLogger\Contract\TokenServiceInterface;
-    use DvsaLogger\Factory\ApiRequestExtrasProcessorFactory;
-    use DvsaLogger\Factory\ApiRequestListenerFactor;
-    use DvsaLogger\Factory\ApiResponseExtrasProcessorFactory;
-    use DvsaLogger\Factory\ConsoleLoggerFactory;
-    use DvsaLogger\Factory\DoctrineQueryExtrasProcessorFactory;
-    use DvsaLogger\Factory\MotLoggerFactory;
-    use DvsaLogger\Factory\ReplaceTraceArgsProcessorFactory;
-    use DvsaLogger\Factory\SapiHelperFactory;
-    use DvsaLogger\Factory\SystemLoggerFactory;
-    use DvsaLogger\Helper\SapiHelper;
-    use DvsaLogger\Listener\ApiClientRequestListener;
-    use DvsaLogger\Listener\ApiRequestListener;
-    use DvsaLogger\Listener\ExceptionListener;
-    use DvsaLogger\Listener\RequestListener;
-    use DvsaLogger\Listener\ResponseListener;
-    use DvsaLogger\Logger\ConsoleLogger;
-    use DvsaLogger\Logger\MotLogger;
-    use DvsaLogger\Logger\SystemLogger;
-    use DvsaLogger\Processor\ApiRequestExtrasProcessor;
-    use DvsaLogger\Processor\ApiResponseExtrasProcessor;
-    use DvsaLogger\Processor\DoctrineQueryExtrasProcessor;
-    use DvsaLogger\Processor\ExtrasProcessor;
-    use DvsaLogger\Processor\ReplaceTraceArgsProcessor;
-    use DvsaLogger\Service\DoctrineQueryLoggerService;
+use DvsaLogger\Adapter\DoctrineDbal3SqlLoggerAdapter;
+use DvsaLogger\Contract\IdentityInterface;
+use DvsaLogger\Contract\IdentityProviderInterface;
+use DvsaLogger\Contract\TokenServiceInterface;
+use DvsaLogger\Factory\ApiRequestExtrasProcessorFactory;
+use DvsaLogger\Factory\ApiRequestListenerFactor;
+use DvsaLogger\Factory\ApiResponseExtrasProcessorFactory;
+use DvsaLogger\Factory\ConsoleLoggerFactory;
+use DvsaLogger\Factory\DoctrineDbal3SqlLoggerAdapterFactory;
+use DvsaLogger\Factory\DoctrineQueryExtrasProcessorFactory;
+use DvsaLogger\Factory\DoctrineQueryLoggerServiceFactory;
+use DvsaLogger\Factory\MotLoggerAbstractFactory;
+use DvsaLogger\Factory\MotLoggerFactory;
+use DvsaLogger\Factory\ReplaceTraceArgsProcessorFactory;
+use DvsaLogger\Factory\SapiHelperFactory;
+use DvsaLogger\Factory\SystemLoggerFactory;
+use DvsaLogger\Helper\SapiHelper;
+use DvsaLogger\Listener\ApiClientRequestListener;
+use DvsaLogger\Listener\ApiRequestListener;
+use DvsaLogger\Listener\ExceptionListener;
+use DvsaLogger\Listener\RequestListener;
+use DvsaLogger\Listener\ResponseListener;
+use DvsaLogger\Logger\ConsoleLogger;
+use DvsaLogger\Logger\MotLogger;
+use DvsaLogger\Logger\SystemLogger;
+use DvsaLogger\Processor\ApiRequestExtrasProcessor;
+use DvsaLogger\Processor\ApiResponseExtrasProcessor;
+use DvsaLogger\Processor\DoctrineQueryExtrasProcessor;
+use DvsaLogger\Processor\ExtrasProcessor;
+use DvsaLogger\Processor\ReplaceTraceArgsProcessor;
+use DvsaLogger\Service\DoctrineQueryLoggerService;
 
     return [
         'mot_logger' => [
-            'channel'                   => 'dvsa-mot',
-
             'request_uuid'              => null,
 
             'register_error_handler'    => true,
@@ -76,73 +78,78 @@
                 'fields'        => ['password', 'pwd', 'pass', 'secret'],
             ],
 
-            'writers' => [
-                [
-                    'type'          => 'stream',
-                    'path'          => '/var/log/dvsa/mot-api.log',
-                    'formatter'     => 'pipe',
-                    'level'         => 'error',
-                    'enabled'       => false,
-                ],
-                [
-                    'type'          => 'stream',
-                    'path'          => '/var/log/dvsa/mot-api.json',
-                    'formatter'     => 'json',
-                    'level'         => 'error',
-                    'enabled'       => false,
-                ],
-                [
-                    'type'          => 'stream',
-                    'path'          => '/var/log/dvsa/mot-frontend.log',
-                    'formatter'     => 'pipe',
-                    'level'         => 'error',
-                    'enabled'       => false,
-                ],
-                [
-                    'type'          => 'stream',
-                    'path'          => '/var/log/dvsa/mot-frontend.json',
-                    'formatter'     => 'json',
-                    'level'         => 'error',
-                    'enabled'       => false,
-                ],
+            'loggers' => [
+                'default' => [
+                    'channel'                   => 'dvsa-mot',
+                    'writers' => [
+                        [
+                            'type'          => 'stream',
+                            'path'          => '/var/log/dvsa/mot-api.log',
+                            'formatter'     => 'pipe',
+                            'level'         => 'error',
+                            'enabled'       => false,
+                        ],
+                        [
+                            'type'          => 'stream',
+                            'path'          => '/var/log/dvsa/mot-api.json',
+                            'formatter'     => 'json',
+                            'level'         => 'error',
+                            'enabled'       => false,
+                        ],
+                        [
+                            'type'          => 'stream',
+                            'path'          => '/var/log/dvsa/mot-frontend.log',
+                            'formatter'     => 'pipe',
+                            'level'         => 'error',
+                            'enabled'       => false,
+                        ],
+                        [
+                            'type'          => 'stream',
+                            'path'          => '/var/log/dvsa/mot-frontend.json',
+                            'formatter'     => 'json',
+                            'level'         => 'error',
+                            'enabled'       => false,
+                        ],
 
-                /**
-                 * Database writer example. To enable, set 'enabled' => true and provide
-                 * a valid Doctrine DBAL connection service name.
-                 *
-                 * The 'connection' value is a service name resolved from Laminas
-                 * ServiceManager at runtime. Register your connection as:
-                 *      'doctrine.connection.mot_logger'    => YourConnectionFactory::class
-                 *
-                 * The column_map supports nested extra fields:
-                 *      'extra' =>  ['request_uuid' => 'request_uuid']
-                 * maps $record=>extra['request_uuid'] into the 'extra' DB column as JSON.
-                 *
-                 * Example for frontend_request table:
-                 *
-                 * 'writers' => [
-                 *      [
-                 *          'type'  =>  'database',
-                 *          'connection'    => 'doctrine.connection.mot_logger',
-                 *          'table'         => 'frontend_request',
-                 *          'column_map'    => [
-                 *              'timestamp'     => 'timestamp',
-                 *              'priority'      => 'priority',
-                 *              'priorityName'  => 'priorityName',
-                 *              'message'       => 'message',
-                 *              'extra'         => [
-                 *                  'request_uuid'  => 'request_uuid',
-                 *                  'username'      => 'username',
-                 *                  'ip_address'    => 'ip_address',
-                 *                  'uri'           => 'uri',
-                 *                  'route'         => 'route',
-                 *              ],
-                 *          ],
-                 *          'level'         => 'info',
-                 *          'enabled'       => true,
-                 *      ],
-                 *  ],
-                 */
+                        /**
+                         * Database writer example. To enable, set 'enabled' => true and provide
+                         * a valid Doctrine DBAL connection service name.
+                         *
+                         * The 'connection' value is a service name resolved from Laminas
+                         * ServiceManager at runtime. Register your connection as:
+                         *      'doctrine.connection.mot_logger'    => YourConnectionFactory::class
+                         *
+                         * The column_map supports nested extra fields:
+                         *      'extra' =>  ['request_uuid' => 'request_uuid']
+                         * maps $record=>extra['request_uuid'] into the 'extra' DB column as JSON.
+                         *
+                         * Example for frontend_request table:
+                         *
+                         * 'writers' => [
+                         *      [
+                         *          'type'  =>  'database',
+                         *          'connection'    => 'doctrine.connection.mot_logger',
+                         *          'table'         => 'frontend_request',
+                         *          'column_map'    => [
+                         *              'timestamp'     => 'timestamp',
+                         *              'priority'      => 'priority',
+                         *              'priorityName'  => 'priorityName',
+                         *              'message'       => 'message',
+                         *              'extra'         => [
+                         *                  'request_uuid'  => 'request_uuid',
+                         *                  'username'      => 'username',
+                         *                  'ip_address'    => 'ip_address',
+                         *                  'uri'           => 'uri',
+                         *                  'route'         => 'route',
+                         *              ],
+                         *          ],
+                         *          'level'         => 'info',
+                         *          'enabled'       => true,
+                         *      ],
+                         *  ],
+                         */
+                    ],
+                ],
             ],
 
             'listeners'   => [
@@ -255,7 +262,8 @@
                 ExceptionListener::class                => ApiRequestListenerFactor::class,
                 ApiRequestListener::class               => ApiRequestListenerFactor::class,
                 ApiClientRequestListener::class         => ApiRequestListenerFactor::class,
-                DoctrineQueryLoggerService::class       => DoctrineQueryExtrasProcessorFactory::class,
+                DoctrineQueryLoggerService::class       => DoctrineQueryLoggerServiceFactory::class,
+                DoctrineDbal3SqlLoggerAdapter::class    => DoctrineDbal3SqlLoggerAdapterFactory::class,
 
                 // Backward compatible factories
                 SystemLogger::class                     => SystemLoggerFactory::class,
@@ -264,6 +272,9 @@
                 ApiRequestExtrasProcessor::class        => ApiRequestExtrasProcessorFactory::class,
                 ApiResponseExtrasProcessor::class       => ApiResponseExtrasProcessorFactory::class,
                 DoctrineQueryExtrasProcessor::class     => DoctrineQueryExtrasProcessorFactory::class,
+            ],
+            'abstract_factories' => [
+                MotLoggerAbstractFactory::class,
             ],
 
             'aliases' => [

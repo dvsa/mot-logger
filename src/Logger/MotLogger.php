@@ -6,6 +6,7 @@ namespace DvsaLogger\Logger;
 
 use DateTimeImmutable;
 use DvsaLogger\Contract\IdentityProviderInterface;
+use DvsaLogger\Contract\LoggerInterface;
 use DvsaLogger\Contract\TokenServiceInterface;
 use DvsaLogger\Helper\FilteredStackTrace;
 use DvsaLogger\Helper\UuidGeneratorTrait;
@@ -19,7 +20,7 @@ use Throwable;
 /**
  * DVSA MOT logger wrapping Monolog.
 */
-class MotLogger
+class MotLogger implements LoggerInterface
 {
     use UuidGeneratorTrait;
 

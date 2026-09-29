@@ -16,7 +16,6 @@ use DvsaLogger\Helper\UuidGeneratorTrait;
 use DvsaLogger\Logger\MotLogger;
 use DvsaLogger\Processor\ReplaceTraceArgsProcessor;
 use DvsaLogger\Processor\SensitiveDataProcessor;
-use DvsaLogger\Processor\TokenExclusionProcessor;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\ErrorHandler;
@@ -65,7 +64,7 @@ readonly class MotLoggerFactory implements FactoryInterface
     ): MotLogger {
         $config = $container->get('Config');
 
-        $motConfig = $this->resolveConfigKey($config);
+        $motConfig = $this->resolveConfigKey($config, (string) $requestedName);
 
         $identityProvider = null;
         $tokenService = null;
@@ -93,17 +92,87 @@ readonly class MotLoggerFactory implements FactoryInterface
     }
 
     /**
-     * Resolves the config key, checking new key first then fall back to legacy keys.
+     * Resolve logger configuration.
      *
-     * @param array<string, mixed> $config
-     * @return array<string, mixed>
+     * Supports legacy logger names for backward compatibility:
+     * - mot_logger
+     * - DvsaApplicationLogger
+     * - DvsaLogger
+     *
+     * Optional named logger configuration:
+     *
+     * 'mot_logger' => [
+     *      'environment_levels' => [...],
+     *      'loggers' => [
+     *          'default' => [
+     *              'channel' => 'cpms-api-client',
+     *              'writers' => [...]
+     *          ]
+     *      ]
+     * ]
+     *
+     * When a named logger is requested, its config is merged with
+     * root-level settings rather than replacing them.
+     *
+     * @param array<string,mixed> $config
+     * @return array<string,mixed>
      */
-    private function resolveConfigKey(array $config): array
-    {
-        return $config['mot_logger']
+    private function resolveConfigKey(
+        array $config,
+        string $requestedName
+    ): array {
+        $motConfig =
+            $config['mot_logger']
             ?? $config['DvsaApplicationLogger']
             ?? $config['DvsaLogger']
             ?? [];
+
+        $loggers = $motConfig['loggers'] ?? [];
+
+        if (!is_array($loggers)) {
+            return $motConfig;
+        }
+
+        $loggerName = $this->resolveLoggerName($requestedName);
+
+        if (
+            isset($loggers[$loggerName]) &&
+            is_array($loggers[$loggerName])
+        ) {
+            $resolvedConfig = array_replace_recursive(
+                $motConfig,
+                $loggers[$loggerName]
+            );
+
+            unset($resolvedConfig['loggers']);
+
+            return $resolvedConfig;
+        }
+
+        if (
+            isset($loggers['default']) &&
+            is_array($loggers['default'])
+        ) {
+            $resolvedConfig = array_replace_recursive(
+                $motConfig,
+                $loggers['default']
+            );
+
+            unset($resolvedConfig['loggers']);
+
+            return $resolvedConfig;
+        }
+
+        unset($motConfig['loggers']);
+
+        return $motConfig;
+    }
+
+    private function resolveLoggerName(string $requestedName): string
+    {
+        return $requestedName === MotLogger::class
+            ? 'default'
+            : $requestedName;
     }
 
     /**

@@ -51,17 +51,31 @@ class MotLoggerFactoryTest extends TestCase
      * @throws NotFoundExceptionInterface
      * @throws RandomException
      */
-    public function testInvokeWithNewConfigKey(): void
+    public function testInvokeUsesNamedLoggerConfiguration(): void
     {
         $container = $this->createContainer([
             'Config' => [
                 'mot_logger' => [
-                    'channel' => 'test-channel',
-                    'writers' => [
-                        [
-                            'type'      => 'stream',
-                            'path'      => 'php://stderr',
-                            'enabled'   => true,
+                    'loggers' => [
+                        'custom_logger' => [
+                            'channel' => 'custom-channel',
+                            'writers' => [
+                                [
+                                    'type'      => 'stream',
+                                    'path'      => 'php://stderr',
+                                    'enabled'   => true,
+                                ],
+                            ],
+                        ],
+                        'other' => [
+                            'channel' => 'other-channel',
+                            'writers' => [
+                                [
+                                    'type' => 'stream',
+                                    'path' => 'php://stderr',
+                                    'enabled' => true,
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -69,9 +83,58 @@ class MotLoggerFactoryTest extends TestCase
         ]);
 
         $factory = new MotLoggerFactory();
+        $logger = $factory($container, 'custom_logger');
+
+        $this->assertSame('custom-channel', $logger->getLogger()->getName());
+        $this->assertCount(1, $logger->getLogger()->getHandlers());
+    }
+
+    public function testUnknownLoggerFallsBackToDefaultLogger(): void
+    {
+        $container = $this->createContainer([
+            'Config' => [
+                'mot_logger' => [
+                    'loggers' => [
+                        'default' => [
+                            'channel' => 'fallback-channel',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $factory = new MotLoggerFactory();
+
+        $logger = $factory($container, 'unknown_logger');
+
+        $this->assertSame(
+            'fallback-channel',
+            $logger->getLogger()->getName()
+        );
+    }
+
+    public function testMotLoggerClassUsesDefaultLoggerConfiguration(): void
+    {
+        $container = $this->createContainer([
+            'Config' => [
+                'mot_logger' => [
+                    'loggers' => [
+                        'default' => [
+                            'channel' => 'default-channel',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $factory = new MotLoggerFactory();
+
         $logger = $factory($container, MotLogger::class);
 
-        $this->assertSame('test-channel', $logger->getLogger()->getName());
+        $this->assertSame(
+            'default-channel',
+            $logger->getLogger()->getName()
+        );
     }
 
     /**
@@ -1049,6 +1112,66 @@ class MotLoggerFactoryTest extends TestCase
 
         $this->assertCount(1, $handlers);
         $this->assertInstanceOf(DoctrineDbalHandler::class, $handlers[0]);
+    }
+
+    public function testNamedLoggersWriteToDifferentFiles(): void
+    {
+        $customFile = tempnam(sys_get_temp_dir(), 'custom');
+        $otherFile = tempnam(sys_get_temp_dir(), 'other');
+
+        $container = $this->createContainer([
+            'Config' => [
+                'mot_logger' => [
+                    'loggers' => [
+                        'custom_logger' => [
+                            'writers' => [[
+                                'type' => 'stream',
+                                'path' => $customFile,
+                                'enabled' => true,
+                            ]],
+                        ],
+                        'other_logger' => [
+                            'writers' => [[
+                                'type' => 'stream',
+                                'path' => $otherFile,
+                                'enabled' => true,
+                            ]],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $factory = new MotLoggerFactory();
+
+        $customLogger = $factory($container, 'custom_logger');
+        $otherLogger = $factory($container, 'other_logger');
+
+        $customLogger->info('custom message');
+        $otherLogger->info('other message');
+
+        $customContents = file_get_contents($customFile);
+        $otherContents = file_get_contents($otherFile);
+
+        $this->assertStringContainsString(
+            'custom message',
+            $customContents
+        );
+
+        $this->assertStringNotContainsString(
+            'other message',
+            $customContents
+        );
+
+        $this->assertStringContainsString(
+            'other message',
+            $otherContents
+        );
+
+        $this->assertStringNotContainsString(
+            'custom message',
+            $otherContents
+        );
     }
 
     private function findProcessor(array $processors, string $class): ?object

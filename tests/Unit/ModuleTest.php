@@ -32,7 +32,7 @@ class ModuleTest extends TestCase
         $config = $module->getConfig();
 
         $this->assertArrayHasKey('mot_logger', $config);
-        $this->assertArrayHasKey('writers', $config['mot_logger']);
+        $this->assertArrayHasKey('writers', $config['mot_logger']['loggers']['default']);
         $this->assertArrayHasKey('listeners', $config['mot_logger']);
         $this->assertArrayHasKey('doctrine_query', $config['mot_logger']);
         $this->assertArrayHasKey('mask_credentials', $config['mot_logger']);
@@ -71,7 +71,8 @@ class ModuleTest extends TestCase
         $module = new Module();
         $config = $module->getConfig();
         $motLogger = $config['mot_logger'];
-        $writers = $motLogger['writers'];
+        $loggers = $motLogger['loggers'];
+        $writers = $loggers['default']['writers'];
 
         foreach ($writers as $writer) {
             $this->assertFalse($writer['enabled'] ?? false);

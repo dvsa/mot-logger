@@ -9,6 +9,9 @@
         errorLevel="3"
         autoloader="vendor/autoload.php"
 >
+    <stubs>
+        <file name="tests/Stubs/Doctrine/DBAL/Logging/SQLLogger.php" />
+    </stubs>
     <projectFiles>
         <directory name="src" />
 
@@ -16,6 +19,7 @@
             <directory name="vendor" />
             <directory name="tests" />
         </ignoreFiles>
+
     </projectFiles>
 
     <issueHandlers>
