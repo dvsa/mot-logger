@@ -21,7 +21,6 @@ final class MotLoggerAbstractFactory implements AbstractFactoryInterface
         ContainerInterface $container,
         $requestedName
     ): bool {
-        error_log('###### AbstractFactory called for: ' . $requestedName);
         $config = $container->get('Config');
         return isset(($config['mot_logger']['loggers'] ?? [])[$requestedName]);
     }
