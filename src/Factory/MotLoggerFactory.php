@@ -104,8 +104,8 @@ readonly class MotLoggerFactory implements FactoryInterface
      * 'mot_logger' => [
      *      'environment_levels' => [...],
      *      'loggers' => [
-     *          'default' => [
-     *              'channel' => 'cpms-api-client',
+     *          'custom_logger' => [
+     *              'channel' => 'custom-logger',
      *              'writers' => [...]
      *          ]
      *      ]
