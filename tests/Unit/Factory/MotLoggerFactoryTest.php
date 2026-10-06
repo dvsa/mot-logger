@@ -877,6 +877,56 @@ class MotLoggerFactoryTest extends TestCase
     }
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws RandomException
+     */
+    public function testCreateUsesNoopIdentityProviderWhenNotInContainer(): void
+    {
+        $container = $this->createContainer([
+            'Config' => ['mot_logger' => []],
+        ]);
+
+        $factory = new MotLoggerFactory();
+        $logger = $factory($container, MotLogger::class);
+
+        $this->assertInstanceOf(MotLogger::class, $logger);
+
+        $handler = new TestHandler();
+        $logger->getLogger()->pushHandler($handler);
+        $logger->info('test');
+
+        $record = $handler->getRecords()[0];
+
+        $this->assertNotNull($record);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws RandomException
+     */
+    public function testCreateUsesNoopTokenServiceWhenNotInContainer(): void
+    {
+        $container = $this->createContainer([
+            'Config' => ['mot_logger' => ['include_token' => true]],
+        ]);
+
+        $factory = new MotLoggerFactory();
+        $logger = $factory($container, MotLogger::class);
+
+        $this->assertInstanceOf(MotLogger::class, $logger);
+
+        $handler = new TestHandler();
+        $logger->getLogger()->pushHandler($handler);
+        $logger->info('test');
+
+        $record = $handler->getRecords()[0];
+
+        $this->assertNotNull($record);
+    }
+
+    /**
      * @throws NotFoundExceptionInterface
      * @throws RandomException
      * @throws ContainerExceptionInterface

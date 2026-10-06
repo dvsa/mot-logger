@@ -6,6 +6,8 @@ namespace DvsaLogger\Factory;
 
 use Doctrine\DBAL\Connection;
 use DvsaLogger\Contract\IdentityProviderInterface;
+use DvsaLogger\Contract\NoopIdentityProvider;
+use DvsaLogger\Contract\NoopTokenService;
 use DvsaLogger\Contract\TokenServiceInterface;
 use DvsaLogger\Formatter\JsonFormatter;
 use DvsaLogger\Formatter\PipeDelimitedFormatter;
@@ -37,7 +39,7 @@ use Random\RandomException;
  *  - Error handler: register_error_handler (new) | registerExceptionHandler (legacy)
  *  - Credential masking: mask_credentials.fields (new) | maskDatabaseCredentials2.argsToMask (legacy)
  */
-readonly class MotLoggerFactory implements FactoryInterface
+class MotLoggerFactory implements FactoryInterface
 {
     use BuildReplaceMapTrait;
     use UuidGeneratorTrait;
@@ -66,25 +68,16 @@ readonly class MotLoggerFactory implements FactoryInterface
 
         $motConfig = $this->resolveConfigKey($config, (string) $requestedName);
 
-        $identityProvider = null;
-        $tokenService = null;
-
         try {
             $identityProvider = $container->get(IdentityProviderInterface::class);
-        } catch (ServiceNotFoundException $exception) {
-            error_log(sprintf(
-                'IdentityProvider implementation not found in container for MotLoggerFactory: %s',
-                $exception->getMessage(),
-            ));
+        } catch (ServiceNotFoundException) {
+            $identityProvider = new NoopIdentityProvider();
         }
 
         try {
             $tokenService = $container->get(TokenServiceInterface::class);
-        } catch (ServiceNotFoundException $exception) {
-            error_log(sprintf(
-                'TokenService implementation not found in container for MotLoggerFactory: %s',
-                $exception->getMessage(),
-            ));
+        } catch (ServiceNotFoundException) {
+            $tokenService = new NoopTokenService();
         }
 
         $factory = new self($identityProvider, $tokenService, $container);
