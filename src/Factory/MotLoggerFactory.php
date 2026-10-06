@@ -121,6 +121,7 @@ readonly class MotLoggerFactory implements FactoryInterface
         array $config,
         string $requestedName
     ): array {
+        $isDefaultLogger = $requestedName === MotLogger::class;
         $motConfig =
             $config['mot_logger']
             ?? $config['DvsaApplicationLogger']
@@ -128,8 +129,14 @@ readonly class MotLoggerFactory implements FactoryInterface
             ?? [];
 
         $loggers = $motConfig['loggers'] ?? [];
+        $selectedLoggerConfig = null;
+        $selectedLoggerHasExplicitErrorHandler = false;
 
         if (!is_array($loggers)) {
+            if (!$isDefaultLogger) {
+                unset($motConfig['register_error_handler'], $motConfig['registerExceptionHandler']);
+            }
+
             return $motConfig;
         }
 
@@ -139,31 +146,36 @@ readonly class MotLoggerFactory implements FactoryInterface
             isset($loggers[$loggerName]) &&
             is_array($loggers[$loggerName])
         ) {
-            $resolvedConfig = array_replace_recursive(
-                $motConfig,
-                $loggers[$loggerName]
-            );
-
-            unset($resolvedConfig['loggers']);
-
-            return $resolvedConfig;
+            $selectedLoggerConfig = $loggers[$loggerName];
         }
 
-        if (
-            isset($loggers['default']) &&
-            is_array($loggers['default'])
-        ) {
+        if ($selectedLoggerConfig === null && isset($loggers['default']) && is_array($loggers['default'])) {
+            $selectedLoggerConfig = $loggers['default'];
+        }
+
+        if (is_array($selectedLoggerConfig)) {
+            $selectedLoggerHasExplicitErrorHandler = array_key_exists('register_error_handler', $selectedLoggerConfig)
+                || array_key_exists('registerExceptionHandler', $selectedLoggerConfig);
+
             $resolvedConfig = array_replace_recursive(
                 $motConfig,
-                $loggers['default']
+                $selectedLoggerConfig
             );
 
             unset($resolvedConfig['loggers']);
+
+            if (!$isDefaultLogger && !$selectedLoggerHasExplicitErrorHandler) {
+                unset($resolvedConfig['register_error_handler'], $resolvedConfig['registerExceptionHandler']);
+            }
 
             return $resolvedConfig;
         }
 
         unset($motConfig['loggers']);
+
+        if (!$isDefaultLogger) {
+            unset($motConfig['register_error_handler'], $motConfig['registerExceptionHandler']);
+        }
 
         return $motConfig;
     }

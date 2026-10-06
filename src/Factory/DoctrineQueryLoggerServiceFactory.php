@@ -23,7 +23,8 @@ class DoctrineQueryLoggerServiceFactory implements FactoryInterface
 
         $motConfig = $this->resolveMotConfig($container);
 
-        $doctrineConfig = $motConfig['doctrine_query'] ?? [];
+        $doctrineConfig = $motConfig['doctrine_query']
+            ?? ($motConfig['loggers']['doctrine_query'] ?? []);
 
         $enabled = (bool) ($doctrineConfig['enabled'] ?? false);
 

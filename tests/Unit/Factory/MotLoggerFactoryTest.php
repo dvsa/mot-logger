@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
+use ReflectionMethod;
 
 class MotLoggerFactoryTest extends TestCase
 {
@@ -135,6 +136,59 @@ class MotLoggerFactoryTest extends TestCase
             'default-channel',
             $logger->getLogger()->getName()
         );
+    }
+
+    public function testNamedLoggerDoesNotInheritRootErrorHandlerSetting(): void
+    {
+        $resolvedConfig = $this->resolveConfigKeyForTest([
+            'mot_logger' => [
+                'register_error_handler' => true,
+                'loggers' => [
+                    'custom_logger' => [
+                        'channel' => 'custom-channel',
+                    ],
+                ],
+            ],
+        ], 'custom_logger');
+
+        $this->assertArrayNotHasKey('register_error_handler', $resolvedConfig);
+        $this->assertArrayNotHasKey('registerExceptionHandler', $resolvedConfig);
+        $this->assertSame('custom-channel', $resolvedConfig['channel']);
+    }
+
+    public function testNamedLoggerCanOverrideErrorHandlerSettingExplicitly(): void
+    {
+        $resolvedConfig = $this->resolveConfigKeyForTest([
+            'mot_logger' => [
+                'register_error_handler' => true,
+                'loggers' => [
+                    'custom_logger' => [
+                        'channel' => 'custom-channel',
+                        'register_error_handler' => false,
+                    ],
+                ],
+            ],
+        ], 'custom_logger');
+
+        $this->assertArrayHasKey('register_error_handler', $resolvedConfig);
+        $this->assertFalse($resolvedConfig['register_error_handler']);
+    }
+
+    public function testDefaultLoggerKeepsRegisterErrorHandlerEnabled(): void
+    {
+        $resolvedConfig = $this->resolveConfigKeyForTest([
+            'mot_logger' => [
+                'register_error_handler' => true,
+                'loggers' => [
+                    'default' => [
+                        'channel' => 'dvsa-mot',
+                    ],
+                ],
+            ],
+        ], MotLogger::class);
+
+        $this->assertArrayHasKey('register_error_handler', $resolvedConfig);
+        $this->assertTrue($resolvedConfig['register_error_handler']);
     }
 
     /**
@@ -1182,5 +1236,20 @@ class MotLoggerFactoryTest extends TestCase
             }
         }
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    private function resolveConfigKeyForTest(array $config, string $requestedName): array
+    {
+        $factory = new MotLoggerFactory();
+        $method = new ReflectionMethod($factory, 'resolveConfigKey');
+
+        /** @var array<string, mixed> $resolvedConfig */
+        $resolvedConfig = $method->invoke($factory, $config, $requestedName);
+
+        return $resolvedConfig;
     }
 }
