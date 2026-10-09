@@ -2,7 +2,17 @@ parameters:
     level: 6
     paths:
         - src
+
     excludePaths:
-        - tests/Stubs
+        analyse:
+            - tests/Stubs
+            - src/Adapter/DoctrineDbal3SqlLoggerAdapter.php
+
     ignoreErrors:
         - identifier: missingType.iterableValue
+
+        - message: '#implements unknown interface Doctrine\\DBAL\\Logging\\SQLLogger#'
+          path: src/Adapter/DoctrineDbal3SqlLoggerAdapter.php
+
+        - message: '#Method .*startQuery\(\) has parameter \$sql with no type specified#'
+          path: src/Adapter/DoctrineDbal3SqlLoggerAdapter.php

@@ -6,6 +6,8 @@ namespace DvsaLogger\Factory;
 
 use Doctrine\DBAL\Connection;
 use DvsaLogger\Contract\IdentityProviderInterface;
+use DvsaLogger\Contract\NoopIdentityProvider;
+use DvsaLogger\Contract\NoopTokenService;
 use DvsaLogger\Contract\TokenServiceInterface;
 use DvsaLogger\Formatter\JsonFormatter;
 use DvsaLogger\Formatter\PipeDelimitedFormatter;
@@ -16,7 +18,6 @@ use DvsaLogger\Helper\UuidGeneratorTrait;
 use DvsaLogger\Logger\MotLogger;
 use DvsaLogger\Processor\ReplaceTraceArgsProcessor;
 use DvsaLogger\Processor\SensitiveDataProcessor;
-use DvsaLogger\Processor\TokenExclusionProcessor;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\ErrorHandler;
@@ -38,7 +39,7 @@ use Random\RandomException;
  *  - Error handler: register_error_handler (new) | registerExceptionHandler (legacy)
  *  - Credential masking: mask_credentials.fields (new) | maskDatabaseCredentials2.argsToMask (legacy)
  */
-readonly class MotLoggerFactory implements FactoryInterface
+class MotLoggerFactory implements FactoryInterface
 {
     use BuildReplaceMapTrait;
     use UuidGeneratorTrait;
@@ -65,27 +66,18 @@ readonly class MotLoggerFactory implements FactoryInterface
     ): MotLogger {
         $config = $container->get('Config');
 
-        $motConfig = $this->resolveConfigKey($config);
-
-        $identityProvider = null;
-        $tokenService = null;
+        $motConfig = $this->resolveConfigKey($config, (string) $requestedName);
 
         try {
             $identityProvider = $container->get(IdentityProviderInterface::class);
-        } catch (ServiceNotFoundException $exception) {
-            error_log(sprintf(
-                'IdentityProvider implementation not found in container for MotLoggerFactory: %s',
-                $exception->getMessage(),
-            ));
+        } catch (ServiceNotFoundException) {
+            $identityProvider = new NoopIdentityProvider();
         }
 
         try {
             $tokenService = $container->get(TokenServiceInterface::class);
-        } catch (ServiceNotFoundException $exception) {
-            error_log(sprintf(
-                'TokenService implementation not found in container for MotLoggerFactory: %s',
-                $exception->getMessage(),
-            ));
+        } catch (ServiceNotFoundException) {
+            $tokenService = new NoopTokenService();
         }
 
         $factory = new self($identityProvider, $tokenService, $container);
@@ -93,17 +85,99 @@ readonly class MotLoggerFactory implements FactoryInterface
     }
 
     /**
-     * Resolves the config key, checking new key first then fall back to legacy keys.
+     * Resolve logger configuration.
      *
-     * @param array<string, mixed> $config
-     * @return array<string, mixed>
+     * Supports legacy logger names for backward compatibility:
+     * - mot_logger
+     * - DvsaApplicationLogger
+     * - DvsaLogger
+     *
+     * Optional named logger configuration:
+     *
+     * 'mot_logger' => [
+     *      'environment_levels' => [...],
+     *      'loggers' => [
+     *          'custom_logger' => [
+     *              'channel' => 'custom-logger',
+     *              'writers' => [...]
+     *          ]
+     *      ]
+     * ]
+     *
+     * When a named logger is requested, its config is merged with
+     * root-level settings rather than replacing them.
+     *
+     * @param array<string,mixed> $config
+     * @return array<string,mixed>
      */
-    private function resolveConfigKey(array $config): array
-    {
-        return $config['mot_logger']
+    private function resolveConfigKey(
+        array $config,
+        string $requestedName
+    ): array {
+        $isDefaultLogger = $requestedName === MotLogger::class;
+        $motConfig =
+            $config['mot_logger']
             ?? $config['DvsaApplicationLogger']
             ?? $config['DvsaLogger']
             ?? [];
+
+        $loggers = $motConfig['loggers'] ?? [];
+        $selectedLoggerConfig = null;
+        $selectedLoggerHasExplicitErrorHandler = false;
+
+        if (!is_array($loggers)) {
+            if (!$isDefaultLogger) {
+                unset($motConfig['register_error_handler'], $motConfig['registerExceptionHandler']);
+            }
+
+            return $motConfig;
+        }
+
+        $loggerName = $this->resolveLoggerName($requestedName);
+
+        if (
+            isset($loggers[$loggerName]) &&
+            is_array($loggers[$loggerName])
+        ) {
+            $selectedLoggerConfig = $loggers[$loggerName];
+        }
+
+        if ($selectedLoggerConfig === null && isset($loggers['default']) && is_array($loggers['default'])) {
+            $selectedLoggerConfig = $loggers['default'];
+        }
+
+        if (is_array($selectedLoggerConfig)) {
+            $selectedLoggerHasExplicitErrorHandler = array_key_exists('register_error_handler', $selectedLoggerConfig)
+                || array_key_exists('registerExceptionHandler', $selectedLoggerConfig);
+
+            $resolvedConfig = array_replace_recursive(
+                $motConfig,
+                $selectedLoggerConfig
+            );
+
+            unset($resolvedConfig['loggers']);
+
+            if (!$isDefaultLogger && !$selectedLoggerHasExplicitErrorHandler) {
+                unset($resolvedConfig['register_error_handler'], $resolvedConfig['registerExceptionHandler']);
+            }
+
+            return $resolvedConfig;
+        }
+
+        unset($motConfig['loggers']);
+
+        if (!$isDefaultLogger) {
+            unset($motConfig['register_error_handler'], $motConfig['registerExceptionHandler']);
+        }
+
+        return $motConfig;
+    }
+
+    private function resolveLoggerName(string $requestedName): string
+    {
+        return $requestedName === MotLogger::class
+            ? 'default'
+            : $requestedName;
     }
 
     /**

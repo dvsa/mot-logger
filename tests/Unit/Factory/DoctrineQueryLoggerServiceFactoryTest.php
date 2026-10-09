@@ -63,6 +63,38 @@ class DoctrineQueryLoggerServiceFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      */
+    public function testCreateWithLoggersFallback(): void
+    {
+        $logger = $this->createMock(MotLogger::class);
+
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->exactly(2))
+            ->method('get')
+            ->willReturnCallback(function (string $name) use ($logger) {
+                if ($name === MotLogger::class) {
+                    return $logger;
+                }
+
+                return [
+                    'mot_logger' => [
+                        'loggers' => [
+                            'doctrine_query' => [
+                                'enabled' => true,
+                            ],
+                        ],
+                    ],
+                ];
+            });
+
+        $factory = new DoctrineQueryLoggerServiceFactory();
+        $service = $factory($container, DoctrineQueryLoggerService::class);
+
+        $this->assertDoctrineQueryLoggerService($service, $logger, true);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     */
     public function testCreateWithLegacyConfig(): void
     {
         $logger = $this->createMock(MotLogger::class);
@@ -74,7 +106,7 @@ class DoctrineQueryLoggerServiceFactoryTest extends TestCase
                 if ($name === MotLogger::class) {
                     return $logger;
                 }
-                return ['DvsaLogger' => ['loggers' => ['doctrine_query' => ['enabled' => true]]]];
+                return ['DvsaLogger' => ['doctrine_query' => ['enabled' => true]]];
             });
 
         $factory = new DoctrineQueryLoggerServiceFactory();
